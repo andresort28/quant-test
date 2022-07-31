@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# IntelliJ IDEA
+/.idea
+
+# Target folder
+/target
+
 # Log file
 *.log
 
