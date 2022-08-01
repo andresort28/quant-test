@@ -11,6 +11,7 @@ import java.util.UUID;
 /**
  * Data structure to be used for communication between Exchange and actors of the market.
  * Similar to the current Financial Information eXchange (FIX) protocol. Use of tags for each field
+ *
  * @author Andres Ortiz
  */
 @Builder
