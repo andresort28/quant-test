@@ -1,6 +1,8 @@
 package com.bitso;
 
 
+import com.bitso.services.OrderService;
+import com.bitso.services.OrderServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -21,23 +23,15 @@ import java.util.Iterator;
 @Slf4j
 public class Exchange {
 
-    private static final int PORT = 8000;
+    protected static final int PORT = 8888;
+    protected static final int BUFFER_CAPACITY = 57;
     private static Exchange INSTANCE;
 
     private Selector selector;
 
-    private Exchange() {
-        try {
-            ServerSocketChannel serverChannel = ServerSocketChannel.open();
-            serverChannel.configureBlocking(false);
-            serverChannel.socket().bind(new InetSocketAddress(PORT));
-            selector = Selector.open();
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-            log.info("Exchange initialized");
-        } catch (IOException e) {
-            log.error("Exchange initialization error");
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException {
+        Exchange exchange = Exchange.getInstance();
+        exchange.start();
     }
 
     /**
@@ -58,30 +52,44 @@ public class Exchange {
      * @throws IOException
      */
     public void start() throws IOException {
-        log.info("Exchange started");
+        log.info("Exchange started successfully!");
         while (true) {
             selector.select();
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
             while (iterator.hasNext()) {
                 SelectionKey key = iterator.next();
                 if (key.isAcceptable()) {
-                    register(key);
+                    accept(key);
                 }
                 if (key.isReadable()) {
-                    process(key);
+                    read(key);
                 }
                 iterator.remove();
             }
         }
     }
 
+    private Exchange() {
+        try {
+            ServerSocketChannel serverChannel = ServerSocketChannel.open();
+            serverChannel.configureBlocking(false);
+            serverChannel.socket().bind(new InetSocketAddress(PORT));
+            selector = Selector.open();
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            log.info("Exchange initialized");
+        } catch (IOException e) {
+            log.error("Exchange initialization error");
+            e.printStackTrace();
+        }
+    }
+
     /**
-     * Process connections registering clients to the Selector
+     * Accept connections and register clients to the Selector
      *
      * @param key
      * @throws IOException
      */
-    private void register(SelectionKey key) throws IOException {
+    private void accept(SelectionKey key) throws IOException {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
         SocketChannel clientChannel = serverChannel.accept();
         clientChannel.configureBlocking(false);
@@ -90,22 +98,34 @@ public class Exchange {
     }
 
     /**
-     * Process messages from clients
+     * Read messages from clients and response
      *
      * @param key
      * @throws IOException
      */
-    private void process(SelectionKey key) throws IOException {
+    private void read(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(BUFFER_CAPACITY);
         int read = clientChannel.read(buffer);
         if (read > 0) {
             String message = new String(buffer.array()).trim();
-            log.info("Message received by a client: {}", message);
+            log.info("Raw message received by a client: {}", message);
+            boolean result = process(message);
+            log.info("Result of the operation: {}", result);
 
-            //Writing back data
+            /*
+            --Write back to the client with the result of the operation--
+            byte data = result ? (byte)1 : (byte)0;
+            ByteBuffer outBuffer = ByteBuffer.wrap(new byte[]{data});
+            clientChannel.write(outBuffer);
+             */
         } else {
+            log.warn("Client shutdown");
             key.cancel();
         }
+    }
+
+    private boolean process(String message) {
+        return false;
     }
 }
