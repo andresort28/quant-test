@@ -7,8 +7,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import static com.bitso.Exchange.BUFFER_CAPACITY;
-import static com.bitso.Exchange.PORT;
+import static com.bitso.shared.Config.BUFFER_CAPACITY;
+import static com.bitso.shared.Config.PORT;
+
 
 /**
  * Client as a market actor who sends a message to the exchange

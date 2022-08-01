@@ -14,6 +14,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
+import static com.bitso.shared.Config.BUFFER_CAPACITY;
+import static com.bitso.shared.Config.PORT;
+
 
 /**
  * Exchange Server using non-blocking I/O sockets to receive clients connections and messages from actors of the market
@@ -23,8 +26,6 @@ import java.util.Iterator;
 @Slf4j
 public class Exchange {
 
-    protected static final int PORT = 8888;
-    protected static final int BUFFER_CAPACITY = 57;
     private static Exchange INSTANCE;
 
     private Selector selector;
@@ -114,6 +115,7 @@ public class Exchange {
             log.info("Result of the operation: {}", result);
 
             /*
+            --Exchange does not respond to clients (out of the scope of this prototype)--
             --Write back to the client with the result of the operation--
             byte data = result ? (byte)1 : (byte)0;
             ByteBuffer outBuffer = ByteBuffer.wrap(new byte[]{data});
