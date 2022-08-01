@@ -1,5 +1,6 @@
 package com.bitso.shared;
 
+import com.bitso.model.Market;
 import com.bitso.model.Message;
 
 import java.util.Optional;
@@ -40,13 +41,13 @@ import java.util.UUID;
  *   <tr>
  *     <th scope="row">3</th>
  *     <td>Price</td>
- *     <td>$</td>
+ *     <td>e.g. 2.00</td>
  *     <td>Order Price</td>
  *   </tr>
  *   <tr>
  *     <th scope="row">4</th>
  *     <td>Amount</td>
- *     <td>$</td>
+ *     <td>e.g. 0.01</td>
  *     <td>Order Volume</td>
  *   </tr>
  *   <tr>
@@ -54,6 +55,12 @@ import java.util.UUID;
  *     <td>OrderId</td>
  *     <td>UUID</td>
  *     <td>Unique UUID</td>
+ *   </tr>
+ *   <tr>
+ *     <th scope="row">6</th>
+ *     <td>Market</td>
+ *     <td>e.g. BTC_USD</td>
+ *     <td>Symbol Market</td>
  *   </tr>
  * </tbody>
  * </table>
@@ -87,23 +94,24 @@ public class Encoder {
     }
 
     private static String encodeAddMessage(Message msg) {
-        StringBuilder builder = new StringBuilder("1=A").append(DELIMITER);
-        builder.append(encodeSide(msg)).append(DELIMITER);
-        builder.append(encodePrice(msg)).append(DELIMITER);
-        builder.append(encodeAmount(msg));
+        StringBuilder builder = new StringBuilder("1=A").append(DELIMITER)
+                .append(encodeSide(msg)).append(DELIMITER)
+                .append(encodePrice(msg)).append(DELIMITER)
+                .append(encodeAmount(msg)).append(DELIMITER)
+                .append(encodeMarket(msg));
         return builder.toString();
     }
 
     private static String encodeDeleteMessage(Message msg) {
-        StringBuilder builder = new StringBuilder("1=D").append(DELIMITER);
-        builder.append(encodeOrderId(msg));
+        StringBuilder builder = new StringBuilder("1=D").append(DELIMITER)
+                .append(encodeOrderId(msg));
         return builder.toString();
     }
 
     private static String encodeModifyMessage(Message msg) {
-        StringBuilder builder = new StringBuilder("1=M").append(DELIMITER);
-        builder.append(encodeAmount(msg)).append(DELIMITER);
-        builder.append(encodeOrderId(msg));
+        StringBuilder builder = new StringBuilder("1=M").append(DELIMITER)
+                .append(encodeAmount(msg)).append(DELIMITER)
+                .append(encodeOrderId(msg));
         return builder.toString();
     }
 
@@ -124,5 +132,9 @@ public class Encoder {
 
     private static String encodeOrderId(Message msg) {
         return "5=" + Optional.ofNullable(msg.getOrderId()).orElse(new UUID(0L, 0L));
+    }
+
+    private static String encodeMarket(Message msg) {
+        return "6=" + Optional.ofNullable(msg.getMarket()).orElse(Market.NONE);
     }
 }

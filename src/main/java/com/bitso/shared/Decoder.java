@@ -1,6 +1,7 @@
 package com.bitso.shared;
 
 import com.bitso.exception.MessageNotSupportedException;
+import com.bitso.model.Market;
 import com.bitso.model.Message;
 import com.bitso.model.MessageType;
 import com.bitso.model.OrderSide;
@@ -20,7 +21,7 @@ import static com.bitso.shared.Encoder.DELIMITER;
  */
 public class Decoder {
 
-    private static final int MAX_TAGS = 6;
+    private static final int MAX_TAGS = 7;
 
     public static Message decode(String msg) throws MessageNotSupportedException {
         String[] fields = new String[MAX_TAGS];
@@ -54,11 +55,13 @@ public class Decoder {
         OrderSide orderSide = getOrderSide(fields[2]);
         Double price = Double.parseDouble(fields[3]);
         Double amount = Double.parseDouble(fields[4]);
+        Market market = Market.valueOf(fields[6]);
         return Message.builder()
                 .messageType(MessageType.ADD)
                 .orderSide(orderSide)
                 .price(price)
                 .amount(amount)
+                .market(market)
                 .build();
     }
 

@@ -2,6 +2,7 @@ package com.bitso.model;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -18,8 +19,11 @@ import java.util.UUID;
 @ToString
 public class Message {
 
+    @NonNull
     private MessageType messageType;
+
     private OrderSide orderSide;
+    private Market market;
     private Double price;
     private Double amount;
     private UUID orderId;
