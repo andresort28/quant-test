@@ -22,17 +22,22 @@ import java.util.Iterator;
 public class Exchange {
 
     private static final int PORT = 8000;
-    private static Exchange exchange = null;
+    private static Exchange INSTANCE;
 
     private Selector selector;
 
-    private Exchange() throws IOException {
-        ServerSocketChannel serverChannel = ServerSocketChannel.open();
-        serverChannel.configureBlocking(false);
-        serverChannel.socket().bind(new InetSocketAddress(PORT));
-        selector = Selector.open();
-        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        log.info("ServerSocketChannel initialized");
+    private Exchange() {
+        try {
+            ServerSocketChannel serverChannel = ServerSocketChannel.open();
+            serverChannel.configureBlocking(false);
+            serverChannel.socket().bind(new InetSocketAddress(PORT));
+            selector = Selector.open();
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            log.info("Exchange initialized");
+        } catch (IOException e) {
+            log.error("Exchange initialization error");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -41,23 +46,19 @@ public class Exchange {
      * @return
      */
     public static Exchange getInstance() {
-        if (exchange == null) {
-            try {
-                exchange = new Exchange();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        if (INSTANCE == null) {
+            INSTANCE = new Exchange();
         }
-        return exchange;
+        return INSTANCE;
     }
 
     /**
-     * Polling to monitor new events to be processed by the Selector.
+     * Polling to monitor new events to be processed by the Selector
      *
      * @throws IOException
      */
     public void start() throws IOException {
-        log.info("ServerSocketChannel started");
+        log.info("Exchange started");
         while (true) {
             selector.select();
             Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
@@ -100,7 +101,7 @@ public class Exchange {
         int read = clientChannel.read(buffer);
         if (read > 0) {
             String message = new String(buffer.array()).trim();
-            log.info("Message received by the client: {}", message);
+            log.info("Message received by a client: {}", message);
 
             //Writing back data
         } else {

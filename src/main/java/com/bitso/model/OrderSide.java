@@ -1,7 +1,7 @@
 package com.bitso.model;
 
 /**
- * Order Types
+ * Order Sides
  * @author Andres Ortiz
  */
 public enum OrderSide {

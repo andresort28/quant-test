@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Personal docs & notes
+/docs
+
 # IntelliJ IDEA
 /.idea
 
