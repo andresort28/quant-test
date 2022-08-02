@@ -1,5 +1,8 @@
 package com.bitso;
 
+import com.bitso.model.Market;
+import com.bitso.repository.OrderBookRepositoryImpl;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
@@ -42,64 +45,101 @@ public class Script {
         //createOrder();
         //removeOrder();
         //updateOrder();
+
+        //--For stress-test purposes only. Read the javadocs before to run it
+        //populateHugeOrderBook();
     }
 
-    public static void populateOrderBook() {
+    private static void populateOrderBook() {
         RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
-
-        //Add Sell Orders to BTC_USD Market
-        for (int i = 4; i < 7; i++) {
-            for (int j = 1; j < 5; j++) {
-                String message = "0=BITSO;1=A;2=S;3=" + (i * 100) + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
-                sendMessage(message);
-            }
-        }
-
         //Add Buy Orders to BTC_USD Market
         for (int i = 1; i < 4; i++) {
-            for (int j = 1; j < 5; j++) {
+            for (int j = 0; j < 4; j++) {
                 String message = "0=BITSO;1=A;2=B;3=" + (i * 100) + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
                 sendMessage(message);
             }
         }
+        //Add Sell Orders to BTC_USD Market
+        for (int i = 4; i < 7; i++) {
+            for (int j = 0; j < 4; j++) {
+                String message = "0=BITSO;1=A;2=S;3=" + (i * 100) + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
+                sendMessage(message);
+            }
+        }
     }
 
-    public static void executeTrade() {
+    private static void executeTrade() {
         final String price = "400";
         final String amount = "5";
         String message = "0=BITSO;1=A;2=B;3=" + price + ";4=" + amount + ";6=BTC_USD";
         sendMessage(message);
     }
 
-    public static void printOrderBook() {
+    private static void printOrderBook() {
         String message = "P=BTC_USD";
         sendMessage(message);
     }
 
-    public static void createOrder() {
+    private static void createOrder() {
         String message = "0=BITSO;1=A;2=B;3=300;4=50;6=BTC_USD";
         sendMessage(message);
     }
 
-    public static void removeOrder() {
+    private static void removeOrder() {
         String uuid = "91f499dc-e70d-44c3-b776-aecb48b0bfa0";
         removeOrder(uuid);
     }
 
-    public static void removeOrder(String uuid) {
+    private static void removeOrder(String uuid) {
         String message = "0=BITSO;1=D;5=" + uuid;
         sendMessage(message);
     }
 
-    public static void updateOrder() {
+    private static void updateOrder() {
         String uuid = "c9bf81f5-02d8-4ebe-8316-9f6cc0c1352c";
         String amount = "99";
         updateOrder(uuid, amount);
     }
 
-    public static void updateOrder(String uuid, String amount) {
+    private static void updateOrder(String uuid, String amount) {
         String message = "0=BITSO;1=M;4=" + amount + ";5=" + uuid;
         sendMessage(message);
+    }
+
+    /**
+     * Populate a Huge OrderBook for a stress-test. 100 price level at both sides with 2000 orders at each level.
+     * <p>
+     * It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
+     * <p>
+     * For this test, comment the body of the methods {@link OrderBookRepositoryImpl#printOrders()} and
+     * {@link OrderBookRepositoryImpl#printOrderBook(Market)} ()} to skip printing all the Orders and the OrderBook
+     * each time the Exchange received a new message.
+     */
+    private static void populateHugeOrderBook() {
+        RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
+
+        final int finalPriceSell = 300;
+        final int initialPriceSell = 201;
+        // Market Spread
+        final int finalPriceBuy = 200;
+        final int initialPriceBuy = 100;
+
+        final int ordersPerLevel = 2000;
+
+        //Add Buy Orders to BTC_USD Market
+        for (int i = initialPriceBuy; i <= finalPriceBuy; i++) {
+            for (int j = 0; j < ordersPerLevel; j++) {
+                String message = "0=BITSO;1=A;2=B;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
+                sendMessage(message);
+            }
+        }
+        //Add Sell Orders to BTC_USD Market
+        for (int i = initialPriceSell; i <= finalPriceSell; i++) {
+            for (int j = 0; j < ordersPerLevel; j++) {
+                String message = "0=BITSO;1=A;2=S;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
+                sendMessage(message);
+            }
+        }
     }
 
     private static void sendMessage(String message) {
