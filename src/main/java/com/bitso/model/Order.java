@@ -3,6 +3,7 @@ package com.bitso.model;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -12,7 +13,6 @@ import java.util.UUID;
  */
 @Getter
 @ToString
-@EqualsAndHashCode
 @RequiredArgsConstructor
 public class Order implements Cloneable{
 
@@ -41,5 +41,18 @@ public class Order implements Cloneable{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return id.equals(order.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

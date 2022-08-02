@@ -5,8 +5,11 @@ import com.bitso.model.OrderSide;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -65,11 +68,11 @@ class OrderBook {
         if (order.getSide() == OrderSide.BUY) {
             PriorityBlockingQueue<Order> queue = bidOrders.get(price);
             result = queue.remove(order);
-            bidOrders.put(price, queue);
+            bidOrders.replace(price, queue);
         } else {
             PriorityBlockingQueue<Order> queue = askOrders.get(price);
             result = queue.remove(order);
-            askOrders.put(price, queue);
+            askOrders.replace(price, queue);
         }
         return result;
     }
@@ -81,13 +84,11 @@ class OrderBook {
      * @return
      */
     protected Order update(Order order, Order currentOrder) {
-        Order newOrder = null;
+        Order newOrder;
         if (order.getAmount() > currentOrder.getAmount()) {
-            //The createdAt will be new
             newOrder = new Order(order.getId(), order.getMarket(), order.getSide(), order.getPrice(), order.getAmount());
         } else {
-            //The createdAt will be the same
-            newOrder = order.clone();
+            newOrder = order;
         }
         boolean result = removeOrder(currentOrder);
         if (result) {
@@ -95,6 +96,113 @@ class OrderBook {
         }
         log.info("Update result of {} : {}", order.getId(), result);
         return newOrder;
+    }
+
+    /**
+     * Fill the Order looking for its counterpart on the other side of the market
+     *
+     * @param order
+     * @return List with all Order filled
+     */
+    public List<Order> fillOrder(Order order) {
+        final double price = order.getPrice();
+        final UUID orderId = order.getId();
+        List<Order> filled = new ArrayList<>();
+
+        if(order.getSide() == OrderSide.BUY) {
+            log.info("Looking Sell Orders (Ask Side) to fill: {}", order);
+            PriorityBlockingQueue<Order> queue = askOrders.get(price);
+            if(queue != null) {
+                while(!queue.isEmpty() && order.getAmount() > 0) {
+                    Order headOrder = queue.peek();
+                    final double availableAmount = headOrder.getAmount();
+                    final double amountToFill = order.getAmount();
+                    if(availableAmount == amountToFill) {
+                        log.info("Sell Order fully filled: {}", headOrder);
+                        queue.remove();
+                        log.info("Sell Order {} was removed from the OrderBook", headOrder.getId());
+                        order.setAmount(0);
+                        headOrder.setAmount(0);
+                        filled.add(headOrder);
+                        askOrders.replace(price, queue);
+                        log.info("Trade {} was fully filled", orderId);
+                        removeOrder(order);
+                        log.info("Trade {} was removed from the OrderBook", orderId);
+                    } else if (availableAmount > amountToFill) {
+                        final double remaining = availableAmount - amountToFill;
+                        log.info("Sell Order partially filled: {}, Remaining Amount {}", headOrder, remaining);
+                        order.setAmount(0);
+                        Order orderFilled = headOrder.clone();
+                        orderFilled.setAmount(remaining);
+                        filled.add(headOrder);
+                        update(orderFilled, headOrder);
+                        log.info("Trade {} was fully filled", orderId);
+                        removeOrder(order);
+                        log.info("Trade {} was removed from the OrderBook", orderId);
+                    } else {
+                        // availableAmount < amountToFill
+                        log.info("Sell Order fully filled: {}", headOrder);
+                        queue.remove();
+                        log.info("Sell Order {} was removed from the OrderBook", headOrder.getId());
+                        final double remaining = amountToFill - availableAmount;
+                        order.setAmount(remaining);
+                        headOrder.setAmount(0);
+                        filled.add(headOrder);
+                        askOrders.replace(price, queue);
+                        log.info("Trade {} was partially filled {}, Remaining Amount {}", orderId, remaining);
+                    }
+                }
+            } else {
+                log.info("There is not any Sell Order at price $ {} to fill the Order {}", price, orderId);
+            }
+        } else {
+            log.info("Looking Buy Orders (Bid Side) to fill: {}", order);
+            PriorityBlockingQueue<Order> queue = bidOrders.get(price);
+            if(queue != null) {
+                while(!queue.isEmpty() && order.getAmount() > 0) {
+                    Order headOrder = queue.peek();
+                    final double availableAmount = headOrder.getAmount();
+                    final double amountToFill = order.getAmount();
+                    if(availableAmount == amountToFill) {
+                        log.info("Buy Order fully filled: {}", headOrder);
+                        queue.remove();
+                        log.info("Buy Order {} was removed from the OrderBook", headOrder.getId());
+                        order.setAmount(0);
+                        headOrder.setAmount(0);
+                        filled.add(headOrder);
+                        bidOrders.replace(price, queue);
+                        log.info("Trade {} was fully filled", orderId);
+                        removeOrder(order);
+                        log.info("Trade {} was removed from the OrderBook", orderId);
+                    } else if (availableAmount > amountToFill) {
+                        final double remaining = availableAmount - amountToFill;
+                        log.info("Buy Order partially filled: {}, Remaining Amount {}", headOrder, remaining);
+                        order.setAmount(0);
+                        Order orderFilled = headOrder.clone();
+                        orderFilled.setAmount(remaining);
+                        filled.add(headOrder);
+                        update(orderFilled, headOrder);
+                        log.info("Trade {} was fully filled", orderId);
+                        removeOrder(order);
+                        log.info("Trade {} was removed from the OrderBook", orderId);
+                    } else {
+                        // availableAmount < amountToFill
+                        log.info("Buy Order fully filled: {}", headOrder);
+                        queue.remove();
+                        log.info("Buy Order {} was removed from the OrderBook", headOrder.getId());
+                        final double remaining = amountToFill - availableAmount;
+                        order.setAmount(remaining);
+                        headOrder.setAmount(0);
+                        filled.add(headOrder);
+                        bidOrders.replace(price, queue);
+                        log.info("Trade {} was partially filled {}, Remaining Amount {}", orderId, remaining);
+                    }
+                }
+            } else {
+                log.info("There is not any Buy Order at price $ {} to fill the Order {}", price, orderId);
+            }
+        }
+        return filled;
     }
 
     /**

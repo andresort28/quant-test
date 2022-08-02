@@ -5,6 +5,7 @@ import com.bitso.model.Order;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -87,6 +88,23 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
     @Override
     public boolean orderBookExist(Market market) {
         return orderBooks.get(market) != null;
+    }
+
+    @Override
+    public boolean fillOrder(Order order) {
+        OrderBook orderBook = orderBooks.get(order.getMarket());
+        List<Order> ordersFilled = orderBook.fillOrder(order);
+        if(ordersFilled.isEmpty()) {
+            return false;
+        }
+        for (Order o : ordersFilled) {
+            if(o.getAmount() == 0) {
+                orders.remove(o.getId());
+            } else {
+                orders.replace(o.getId(), o);
+            }
+        }
+        return true;
     }
 
     @Override

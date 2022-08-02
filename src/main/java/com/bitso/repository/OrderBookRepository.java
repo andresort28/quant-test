@@ -51,6 +51,14 @@ public interface OrderBookRepository {
     boolean orderBookExist(Market market);
 
     /**
+     * Fill the Order in the OrderBook
+     *
+     * @param order
+     * @return true is the Order was filled partially or totally, otherwise false
+     */
+    boolean fillOrder(Order order);
+
+    /**
      * Get Ask Orders from the OrderBook of a specific price of a certain {@link Market}
      *
      * @param market

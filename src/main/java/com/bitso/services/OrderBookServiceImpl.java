@@ -53,7 +53,7 @@ public class OrderBookServiceImpl implements OrderBookService {
 
     @Override
     public double getEquilibriumMidMarketPrice(Market market, double halfLife) {
-        //TODO Bonus Track
+        //Bonus Track (The decay function was not clear in the document neither was the halfLife)
         return 0;
     }
 

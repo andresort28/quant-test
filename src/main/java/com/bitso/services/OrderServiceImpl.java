@@ -21,6 +21,7 @@ public class OrderServiceImpl implements OrderService {
 
     private static OrderServiceImpl INSTANCE;
     private final OrderBookRepository orderBookRepository = OrderBookRepositoryImpl.getInstance();
+    private final MatchingEngine matchingEngine = MatchingEngine.getInstance();
 
     /**
      * Get Singleton instance
@@ -46,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     public void addOrder(Order order) {
         log.info("Order to add: {}", order);
         orderBookRepository.add(order);
+        matchingEngine.executeTrade(order);
     }
 
     @Override
@@ -60,11 +62,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void modifyOrder(UUID orderId, double newAmount) throws OrderNotFoundException {
-        log.info("Order to modify: {}, New Amount: {}", orderId, newAmount);
         Order order = orderBookRepository.get(orderId);
         if (order == null) {
             throw new OrderNotFoundException("Order " + orderId + " not found to be updated");
         }
+        log.info("Order to modify: {}, Amount: {}, New Amount: {}", orderId, order.getAmount(), newAmount);
         Order cOrder = order.clone();
         if(newAmount != cOrder.getAmount()) {
             cOrder.setAmount(newAmount);
