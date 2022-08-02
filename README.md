@@ -21,18 +21,18 @@ git clone https://github.com/andresort28/quant-test.git
 ```
 
 ### Run the Exchange and Script
-1. Run the `main()` method of the Exchange class.
-2. Read the `main()` method of the Script class following the steps written in javadocs before to run it.
+1. Run the `main()` method of the `Exchange` class.
+2. Read the `main()` method of the `Script` class and follow the steps written in javadocs before to run it.
 
 ### Run stress-test
 - The Script contains the method `populateHugeOrderBook()` in order to create the `400,000` operations in the OrderBook. However, since it takes so long to receive all 400,000 messages in the Exchange, you can test with a smaller case to see that we are guaranteeing `thread-safe` on all operations and still handle an algorithmic complexity of `O(1)` with the data structures used as `ConcurrentHashMap` and `PriorityBlockingQueue` for the OrderBook.
 
 ### Implementation Notes
-- The idea is to create a simplistic framework, that's why I did not use Netty directly as the client-server framework and I used NIO instead.
+- The idea is to create a simplistic framework, that's why I did not use `Netty` directly as the client-server framework, and I used `NIO` instead.
 - Any dependency injection framework is used, so I apply Singleton pattern for the repositories, services and server classes.
-- I decided to use Repository Pattern instead of DAO to be able to scale the framework to use database like Redis with the current Repository layer
-- This is a prototype and does not implement an indexing database, so I store duplicate objects (Order) in different data structure to guarantee O(1) in searching, adding, updating and removing
-- Sometimes when the OrderBook is printed, the ordering by createdAt is not visually correctly, however the PriorityQueue guarantee FIFO with its head.
+- I decided to use `Repository Pattern` instead of `DAO` to be able to scale the framework to use database like Redis with the current Repository layer
+- This is a prototype and does not implement an indexing database, so I store duplicate objects (`Order`) in different data structure to guarantee `O(1)` in searching, adding, updating and removing
+- Sometimes when the `OrderBook` is printed, the ordering by `createdAt` field is not visually correctly, however the `PriorityBlockingQueue` guarantee `FIFO` with its head.
 - Multi-symbol allow (In Production we can use a message broker like Kafka to support multiple orders from multiple symbols instead of SocketChannels)
 
 
