@@ -56,7 +56,7 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
 
         final Market market = order.getMarket();
         OrderBook orderBook = orderBooks.getOrDefault(market, new OrderBook());
-        boolean result = orderBook.addOrder(order);
+        boolean result = orderBook.add(order);
         log.info("Order {} added to the OrderBook: {}", order.getId(), result);
         orderBooks.put(market, orderBook);
         printOrders();
@@ -79,7 +79,7 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
         orders.remove(order.getId());
 
         OrderBook orderBook = orderBooks.get(order.getMarket());
-        boolean result = orderBook.removeOrder(order);
+        boolean result = orderBook.remove(order);
         log.info("Order {} removed from the OrderBook: {}", order.getId(), result);
         printOrders();
         printOrderBook(order.getMarket());

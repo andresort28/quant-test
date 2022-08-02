@@ -147,7 +147,7 @@ public class Exchange {
     private void process(String message) {
         //Condition for testing purposes only. Message outside the established protocol.
         if (message.startsWith("P=")) {
-            print(message);
+            printOrderBook(message);
             return;
         }
         try {
@@ -187,7 +187,7 @@ public class Exchange {
      *
      * @param message
      */
-    private void print(String message) {
+    private void printOrderBook(String message) {
         String[] values = message.trim().split("=");
         Market market = Market.valueOf(values[1]);
         log.debug("Request received to print the OrderBook of the Market {}", market);
