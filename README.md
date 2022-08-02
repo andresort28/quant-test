@@ -31,9 +31,8 @@ git clone https://github.com/andresort28/quant-test.git
 - The idea is to create a simplistic framework, that's why I did not use `Netty` directly as the client-server framework, and I used `NIO` instead.
 - Any dependency injection framework is used, so I apply Singleton pattern for the repositories, services and server classes.
 - I decided to use `Repository Pattern` instead of `DAO` to be able to scale the framework to use database like Redis with the current Repository layer
-- This is a prototype and does not implement an indexing database, so I store duplicate objects (`Order`) in different data structure to guarantee `O(1)` in searching, adding, updating and removing
-- Sometimes when the `OrderBook` is printed, the ordering by `createdAt` field is not visually correctly, however the `PriorityBlockingQueue` guarantee `FIFO` with its head.
-- Multi-symbol allow (In Production we can use a message broker like Kafka to support multiple orders from multiple symbols instead of SocketChannels)
+- This is a prototype and does not implement an indexing database, so I stored duplicate objects `Order` (In Orders Maps and OrderBook Maps) to guarantee `O(1)` in search, add, update and delete operations.
+- On rare occasions, the `OrderBook` is printed without showing all the items ordered by the `createdAt` field. However, this is not a problem per se, rather the `PriorityBlockingQueue` mainly guarantees `FIFO` with the element in its head.
 
 
 ### For Production 
@@ -41,9 +40,29 @@ git clone https://github.com/andresort28/quant-test.git
 - We can use `Jedis` (Possibly with JedisPool to be thread-safe), or `Lettuce` or `Redisson` for a better scalability as Redis library for Java
 - We could use a message broker like `kafka` to support multiple orders from multiple symbols instead of `SocketChannels` 
 
+### Screenshots
+
+1. Running the Exchange
+
+![image](https://user-images.githubusercontent.com/10570609/182484475-bb7d3dbc-67c3-4c47-98dd-c07d35d81594.png)
+
+2. Running the Script to send messages to the Exchange and populate an OrderBook
+
+![image](https://user-images.githubusercontent.com/10570609/182484680-2e2e5e6b-da12-451b-aea1-111fa8617506.png)
+
+3. Exchange printing the Orders and the OrderBook
+
+![image](https://user-images.githubusercontent.com/10570609/182484869-871ca92f-fd1d-40b4-9f85-014bb91a4539.png)
+
+4. Sending a new Buy Order (price=400, amount=7) to the Exchange
+
+![image](https://user-images.githubusercontent.com/10570609/182485092-4d1a9aba-a9ab-4ae5-95d6-f7be09f9047b.png)
+
+5. Matching Engine filling the Order with the first and the second Order in Ask Side (price=400) according to FIFO
+
+![image](https://user-images.githubusercontent.com/10570609/182485377-8d5e2b35-3ac6-43de-9bae-ce68ea506e82.png)
+
+
 ### Contact
 
 Copyright (c) 2022 [Andres Ortiz](https://www.linkedin.com/in/andresortiz28).  
-
-
-
