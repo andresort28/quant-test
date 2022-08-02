@@ -67,4 +67,10 @@ public interface OrderBookRepository {
      * @return
      */
     Queue<Order> getBidOrders(Market market, double price);
+
+    /**
+     * Print the OrderBook of a given {@link Market}
+     * @param market
+     */
+    void printOrderBook(Market market);
 }

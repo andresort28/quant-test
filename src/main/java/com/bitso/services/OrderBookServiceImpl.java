@@ -47,6 +47,11 @@ public class OrderBookServiceImpl implements OrderBookService {
     }
 
     @Override
+    public void printOrderBook(Market market) {
+        orderBookRepository.printOrderBook(market);
+    }
+
+    @Override
     public double getEquilibriumMidMarketPrice(Market market, double halfLife) {
         //TODO Bonus Track
         return 0;

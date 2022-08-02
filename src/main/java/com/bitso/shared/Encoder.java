@@ -123,11 +123,11 @@ public class Encoder {
     }
 
     private static String encodePrice(Message msg) {
-        return "3=" + Optional.ofNullable(msg.getPrice()).orElse(0.0);
+        return "3=" + msg.getPrice();
     }
 
     private static String encodeAmount(Message msg) {
-        return "4=" + Optional.ofNullable(msg.getAmount()).orElse(0.0);
+        return "4=" + msg.getAmount();
     }
 
     private static String encodeOrderId(Message msg) {

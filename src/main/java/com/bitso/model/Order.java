@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @EqualsAndHashCode
 @RequiredArgsConstructor
-public class Order {
+public class Order implements Cloneable{
 
     @NonNull
     private UUID id;
@@ -34,6 +34,12 @@ public class Order {
 
     private final Instant createdAt = Instant.now();
 
-    @Setter
-    private Instant modifiedAt = createdAt;
+    @Override
+    public Order clone() {
+        try {
+            return (Order) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }

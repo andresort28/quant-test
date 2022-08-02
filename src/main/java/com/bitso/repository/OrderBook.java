@@ -38,7 +38,7 @@ class OrderBook {
      */
     protected boolean addOrder(Order order) {
         final double price = order.getPrice();
-        PriorityBlockingQueue<Order> defaultQueue = new PriorityBlockingQueue<>(10, Comparator.comparing(Order::getModifiedAt));
+        PriorityBlockingQueue<Order> defaultQueue = new PriorityBlockingQueue<>(10, Comparator.comparing(Order::getCreatedAt));
 
         boolean result;
         if (order.getSide() == OrderSide.BUY) {
@@ -80,12 +80,21 @@ class OrderBook {
      * @param order
      * @return
      */
-    protected boolean update(Order order) {
-        boolean result = removeOrder(order);
-        if(result) {
-            return addOrder(order);
+    protected Order update(Order order, Order currentOrder) {
+        Order newOrder = null;
+        if (order.getAmount() > currentOrder.getAmount()) {
+            //The createdAt will be new
+            newOrder = new Order(order.getId(), order.getMarket(), order.getSide(), order.getPrice(), order.getAmount());
+        } else {
+            //The createdAt will be the same
+            newOrder = order.clone();
         }
-        return false;
+        boolean result = removeOrder(currentOrder);
+        if (result) {
+            result = addOrder(newOrder);
+        }
+        log.info("Update result of {} : {}", order.getId(), result);
+        return newOrder;
     }
 
     /**

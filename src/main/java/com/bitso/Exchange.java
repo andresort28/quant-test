@@ -3,8 +3,11 @@ package com.bitso;
 
 import com.bitso.exception.MessageNotSupportedException;
 import com.bitso.exception.OrderNotFoundException;
+import com.bitso.model.Market;
 import com.bitso.model.Message;
 import com.bitso.model.Order;
+import com.bitso.services.OrderBookService;
+import com.bitso.services.OrderBookServiceImpl;
 import com.bitso.services.OrderService;
 import com.bitso.services.OrderServiceImpl;
 import com.bitso.shared.Decoder;
@@ -35,6 +38,7 @@ public class Exchange {
 
     private Selector selector;
     private final OrderService orderService = OrderServiceImpl.getInstance();
+    private final OrderBookService orderBookService = OrderBookServiceImpl.getInstance();
 
     public static void main(String[] args) throws IOException {
         Exchange exchange = Exchange.getInstance();
@@ -141,6 +145,11 @@ public class Exchange {
      * @param message
      */
     private void process(String message) {
+        //Condition for testing purposes only. Message outside the established protocol.
+        if (message.startsWith("P=")) {
+            print(message);
+            return;
+        }
         try {
             Message msg = Decoder.decode(message);
             log.info("Decoded message: {}", msg);
@@ -155,7 +164,7 @@ public class Exchange {
                     orderService.deleteOrder(msg.getOrderId());
                 }
                 case MODIFY -> {
-                    log.info("Modifying Order {}, Amount {}", msg.getOrderId(), msg.getAmount());
+                    log.info("Modifying Order {}, New Amount {}", msg.getOrderId(), msg.getAmount());
                     orderService.modifyOrder(msg.getOrderId(), msg.getAmount());
                 }
             }
@@ -164,5 +173,24 @@ public class Exchange {
         } catch (OrderNotFoundException e) {
             log.error("Error deleting or modifying an Order", e);
         }
+    }
+
+    /**
+     * Process print request given a Market in the Message. Only for testing purposes
+     *
+     * </blockquote>
+     * <ul>
+     *     <li>e.g. "P=BTC_USD"</li>
+     *     <li>e.g. "P=BTC_MXN"</li>
+     * </ul>
+     * </blockquote>
+     *
+     * @param message
+     */
+    private void print(String message) {
+        String[] values = message.trim().split("=");
+        Market market = Market.valueOf(values[1]);
+        log.debug("Request received to print the OrderBook of the Market {}", market);
+        orderBookService.printOrderBook(market);
     }
 }

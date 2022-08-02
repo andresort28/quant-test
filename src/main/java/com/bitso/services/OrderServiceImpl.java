@@ -60,13 +60,18 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void modifyOrder(UUID orderId, double newAmount) throws OrderNotFoundException {
-        log.info("Order to modify: {}, New amount: {}", orderId, newAmount);
+        log.info("Order to modify: {}, New Amount: {}", orderId, newAmount);
         Order order = orderBookRepository.get(orderId);
         if (order == null) {
             throw new OrderNotFoundException("Order " + orderId + " not found to be updated");
         }
-        order.setAmount(newAmount);
-        orderBookRepository.update(order);
+        Order cOrder = order.clone();
+        if(newAmount != cOrder.getAmount()) {
+            cOrder.setAmount(newAmount);
+            orderBookRepository.update(cOrder);
+        } else {
+            log.info("Order " + orderId + " was not modified because the new amount is the same");
+        }
     }
 
     private OrderServiceImpl() {

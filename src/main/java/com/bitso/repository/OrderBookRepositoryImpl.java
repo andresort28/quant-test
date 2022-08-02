@@ -4,9 +4,9 @@ import com.bitso.model.Market;
 import com.bitso.model.Order;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,18 +58,19 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
         boolean result = orderBook.addOrder(order);
         log.info("Order {} added to the OrderBook: {}", order.getId(), result);
         orderBooks.put(market, orderBook);
-        printMaps();
+        printOrders();
+        printOrderBook(market);
     }
 
     @Override
     public void update(Order order) {
-        order.setModifiedAt(Instant.now());
-        orders.replace(order.getId(), order);
-
+        Order currentOrder = orders.get(order.getId());
         OrderBook orderBook = orderBooks.get(order.getMarket());
-        boolean result = orderBook.update(order);
-        log.info("Order {} updated in the OrderBook: {}", order.getId(), result);
-        printMaps();
+        Order newOrder = orderBook.update(order, currentOrder);
+        log.info("Order {} updated in the OrderBook", newOrder);
+        orders.replace(order.getId(), newOrder);
+        printOrders();
+        printOrderBook(order.getMarket());
     }
 
     @Override
@@ -79,7 +80,8 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
         OrderBook orderBook = orderBooks.get(order.getMarket());
         boolean result = orderBook.removeOrder(order);
         log.info("Order {} removed from the OrderBook: {}", order.getId(), result);
-        printMaps();
+        printOrders();
+        printOrderBook(order.getMarket());
     }
 
     @Override
@@ -105,18 +107,17 @@ public class OrderBookRepositoryImpl implements OrderBookRepository {
         return null;
     }
 
-    /**
-     * Print the Map of Orders, and the Map og OrderBook (LOB) for each Market
-     */
-    private void printMaps() {
-        log.debug("--Orders Maps");
-        orders.forEach((id, order) -> log.debug("----{}", order));
+    @Override
+    public void printOrderBook(Market market) {
+        log.debug("--OrderBook Map");
+        OrderBook orderBook = orderBooks.get(market);
+        log.debug("----Market: {}", market);
+        Optional.ofNullable(orderBook).ifPresent(OrderBook::print);
+    }
 
-        log.debug("--OrderBooks Maps");
-        orderBooks.forEach((k, v) -> {
-            log.debug("----Market: {}", k);
-            v.print();
-        });
+    private void printOrders() {
+        log.debug("--Orders Map");
+        orders.forEach((id, order) -> log.debug("----{}", order));
     }
 
     private OrderBookRepositoryImpl() {

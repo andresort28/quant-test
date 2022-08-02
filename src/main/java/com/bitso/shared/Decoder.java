@@ -53,8 +53,8 @@ public class Decoder {
 
     private static Message decodeAddMessage(String[] fields) {
         OrderSide orderSide = getOrderSide(fields[2]);
-        Double price = Double.parseDouble(fields[3]);
-        Double amount = Double.parseDouble(fields[4]);
+        double price = Double.parseDouble(fields[3]);
+        double amount = Double.parseDouble(fields[4]);
         Market market = Market.valueOf(fields[6]);
         return Message.builder()
                 .messageType(MessageType.ADD)
@@ -74,7 +74,7 @@ public class Decoder {
     }
 
     private static Message decodeModifyMessage(String[] fields) {
-        Double amount = Double.parseDouble(fields[4]);
+        double amount = Double.parseDouble(fields[4]);
         UUID orderId = UUID.fromString(fields[5]);
         return Message.builder()
                 .messageType(MessageType.MODIFY)

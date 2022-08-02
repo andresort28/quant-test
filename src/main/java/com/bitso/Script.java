@@ -1,5 +1,7 @@
 package com.bitso;
 
+import com.bitso.model.Market;
+
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
@@ -9,10 +11,21 @@ public class Script {
     private static final long MS = 100;
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        populate();
-        //removeOrder();
+        //populate();
+
         //createOrder();
+        //removeOrder();
         //updateOrder();
+
+        //printOrderBook();
+    }
+
+    public static void printOrderBook() throws IOException {
+        Client client = new Client();
+        String message = "P=" + Market.BTC_USD;
+        System.out.println("Message to send: " + message);
+        client.sendMessage(message);
+        client.stop();
     }
 
     public static void populate() throws InterruptedException, IOException {

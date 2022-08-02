@@ -38,6 +38,12 @@ public interface OrderBookService {
     boolean orderBookExist(Market market);
 
     /**
+     * Print the OrderBook of a given {@link Market}
+     * @param market
+     */
+    void printOrderBook(Market market);
+
+    /**
      * Calculate the equilibrium mid-market price (EP) which is the equilibrium price of cumulative discounted total
      * volume functions of bid and ask side of a {@link Market} given a {@code halfLife}
      *
