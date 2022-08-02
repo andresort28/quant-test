@@ -21,13 +21,6 @@ public class Client {
     private static SocketChannel socketChannel;
     private static ByteBuffer buffer;
 
-    public static void main(String[] args) throws IOException {
-        Client client = new Client();
-        String message = "0=BITSO;1=D;5=12300000-0000-0000-0000-000000000001";
-        client.sendMessage(message);
-        client.stop();
-    }
-
     public void stop() throws IOException {
         socketChannel.close();
         buffer = null;
@@ -56,7 +49,8 @@ public class Client {
             socketChannel.write(buffer);
 
             /*
-            --Read from the Exchange the result of the operation--
+            //--Exchange does not respond to clients (out of the scope of this prototype)--
+            //--Read from the Exchange the result of the operation--
             buffer.clear();
             socketChannel.read(buffer);
             String response = new String(buffer.array()).trim();

@@ -25,7 +25,7 @@ public class Message {
 
     private OrderSide orderSide;
     private Market market;
-    private Double price;
-    private Double amount;
+    private double price;
+    private double amount;
     private UUID orderId;
 }
