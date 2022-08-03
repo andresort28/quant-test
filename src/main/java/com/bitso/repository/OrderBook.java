@@ -125,9 +125,9 @@ class OrderBook {
                         headOrder.setAmount(0);
                         filled.add(headOrder);
                         askOrders.replace(price, queue);
-                        log.info("Trade {} was fully filled", orderId);
+                        log.info("Buy Trade {} was fully filled", orderId);
                         remove(order);
-                        log.info("Trade {} was removed from the OrderBook", orderId);
+                        log.info("Buy Trade {} was removed from the OrderBook", orderId);
                     } else if (availableAmount > amountToFill) {
                         final double remaining = availableAmount - amountToFill;
                         log.info("Sell Order partially filled: {}, Remaining Amount {}", headOrder, remaining);
@@ -136,9 +136,9 @@ class OrderBook {
                         orderFilled.setAmount(remaining);
                         filled.add(headOrder);
                         update(orderFilled, headOrder);
-                        log.info("Trade {} was fully filled", orderId);
+                        log.info("Buy Trade {} was fully filled", orderId);
                         remove(order);
-                        log.info("Trade {} was removed from the OrderBook", orderId);
+                        log.info("Buy Trade {} was removed from the OrderBook", orderId);
                     } else {
                         // availableAmount < amountToFill
                         log.info("Sell Order fully filled: {}", headOrder);
@@ -149,7 +149,7 @@ class OrderBook {
                         headOrder.setAmount(0);
                         filled.add(headOrder);
                         askOrders.replace(price, queue);
-                        log.info("Trade {} was partially filled {}, Remaining Amount {}", orderId, remaining);
+                        log.info("Buy Trade {} was partially filled, Remaining Amount {}", orderId, remaining);
                     }
                 }
             } else {
@@ -171,9 +171,9 @@ class OrderBook {
                         headOrder.setAmount(0);
                         filled.add(headOrder);
                         bidOrders.replace(price, queue);
-                        log.info("Trade {} was fully filled", orderId);
+                        log.info("Sell Trade {} was fully filled", orderId);
                         remove(order);
-                        log.info("Trade {} was removed from the OrderBook", orderId);
+                        log.info("Sell Trade {} was removed from the OrderBook", orderId);
                     } else if (availableAmount > amountToFill) {
                         final double remaining = availableAmount - amountToFill;
                         log.info("Buy Order partially filled: {}, Remaining Amount {}", headOrder, remaining);
@@ -182,9 +182,9 @@ class OrderBook {
                         orderFilled.setAmount(remaining);
                         filled.add(headOrder);
                         update(orderFilled, headOrder);
-                        log.info("Trade {} was fully filled", orderId);
+                        log.info("Sell Trade {} was fully filled", orderId);
                         remove(order);
-                        log.info("Trade {} was removed from the OrderBook", orderId);
+                        log.info("Sell Trade {} was removed from the OrderBook", orderId);
                     } else {
                         // availableAmount < amountToFill
                         log.info("Buy Order fully filled: {}", headOrder);
@@ -195,7 +195,7 @@ class OrderBook {
                         headOrder.setAmount(0);
                         filled.add(headOrder);
                         bidOrders.replace(price, queue);
-                        log.info("Trade {} was partially filled {}, Remaining Amount {}", orderId, remaining);
+                        log.info("Sell Trade {} was partially filled, Remaining Amount {}", orderId, remaining);
                     }
                 }
             } else {
