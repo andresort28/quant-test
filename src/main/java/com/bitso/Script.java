@@ -76,7 +76,7 @@ public class Script {
     }
 
     private static void printOrderBook() {
-        String message = "P=BTC_USD";
+        String message = "0=BITSO;1=P;6=BTC_USD";
         sendMessage(message);
     }
 

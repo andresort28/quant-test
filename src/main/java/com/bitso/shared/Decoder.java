@@ -39,6 +39,7 @@ public class Decoder {
             case ADD -> decodeAddMessage(fields);
             case DELETE -> decodeDeleteMessage(fields);
             case MODIFY -> decodeModifyMessage(fields);
+            case PRINT -> decodePrintMessage(fields);
         };
     }
 
@@ -47,6 +48,7 @@ public class Decoder {
             case "A" -> MessageType.ADD;
             case "D" -> MessageType.DELETE;
             case "M" -> MessageType.MODIFY;
+            case "P" -> MessageType.PRINT;
             default -> null;
         };
     }
@@ -80,6 +82,14 @@ public class Decoder {
                 .messageType(MessageType.MODIFY)
                 .amount(amount)
                 .orderId(orderId)
+                .build();
+    }
+
+    private static Message decodePrintMessage(String[] fields) {
+        Market market = Market.valueOf(fields[6]);
+        return Message.builder()
+                .messageType(MessageType.PRINT)
+                .market(market)
                 .build();
     }
 

@@ -29,8 +29,8 @@ import java.util.UUID;
  *   <tr>
  *     <th scope="row">1</th>
  *     <td>MessageType</td>
- *     <td>"A","D","M"</td>
- *     <td>Add, Delete, Modify</td>
+ *     <td>"A","D","M", "P"</td>
+ *     <td>Add, Delete, Modify, Print</td>
  *   </tr>
  *   <tr>
  *     <th scope="row">2</th>
@@ -41,26 +41,26 @@ import java.util.UUID;
  *   <tr>
  *     <th scope="row">3</th>
  *     <td>Price</td>
- *     <td>e.g. 2.00</td>
+ *     <td>e.g. 100.0</td>
  *     <td>Order Price</td>
  *   </tr>
  *   <tr>
  *     <th scope="row">4</th>
  *     <td>Amount</td>
- *     <td>e.g. 0.01</td>
+ *     <td>e.g. 72.0</td>
  *     <td>Order Volume</td>
  *   </tr>
  *   <tr>
  *     <th scope="row">5</th>
  *     <td>OrderId</td>
- *     <td>UUID</td>
+ *     <td>e.g. 123e4567-e89b-12d3-a456-426614174000</td>
  *     <td>Unique UUID</td>
  *   </tr>
  *   <tr>
  *     <th scope="row">6</th>
  *     <td>Market</td>
- *     <td>e.g. BTC_USD</td>
- *     <td>Symbol Market</td>
+ *     <td>e.g. "BTC_USD"</td>
+ *     <td>Market Symbol</td>
  *   </tr>
  * </tbody>
  * </table>
@@ -72,6 +72,7 @@ import java.util.UUID;
  *     <li>"0=BITSO;1=A;2=S;3=24001.25;4=0.02;6=BTC_USD" -> 42 bytes</li>
  *     <li>"0=BITSO;1=D;5=12300000-0000-0000-0000-000000000000" -> 50 bytes</li>
  *     <li>"0=BITSO;1=M;4=0.02;5=12300000-0000-0000-0000-000000000000" -> 57 bytes</li>
+ *     <li>"0=BITSO;1=P;6=BTC_USD" -> 21 bytes</li>
  * </ul>
  * </blockquote>
  *

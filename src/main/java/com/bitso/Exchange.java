@@ -145,11 +145,6 @@ public class Exchange {
      * @param message
      */
     private void process(String message) {
-        //Condition for testing purposes only. Message outside the established protocol.
-        if (message.startsWith("P=")) {
-            printOrderBook(message);
-            return;
-        }
         try {
             Message msg = Decoder.decode(message);
             log.info("Decoded message: {}", msg);
@@ -167,6 +162,10 @@ public class Exchange {
                     log.info("Modifying Order {}, New Amount {}", msg.getOrderId(), msg.getAmount());
                     orderService.modifyOrder(msg.getOrderId(), msg.getAmount());
                 }
+                case PRINT -> {
+                    log.info("Print OrderBook {}", msg.getMarket());
+                    printOrderBook(msg.getMarket());
+                }
             }
         } catch (MessageNotSupportedException e) {
             log.error("Error decoding the message", e);
@@ -176,21 +175,11 @@ public class Exchange {
     }
 
     /**
-     * Process print request given a Market in the Message. Only for testing purposes
+     * Print OrderBook given a {@link Market}
      *
-     * </blockquote>
-     * <ul>
-     *     <li>e.g. "P=BTC_USD"</li>
-     *     <li>e.g. "P=BTC_MXN"</li>
-     * </ul>
-     * </blockquote>
-     *
-     * @param message
+     * @param market
      */
-    private void printOrderBook(String message) {
-        String[] values = message.trim().split("=");
-        Market market = Market.valueOf(values[1]);
-        log.debug("Request received to print the OrderBook of the Market {}", market);
+    private void printOrderBook(Market market) {
         orderBookService.printOrderBook(market);
     }
 }

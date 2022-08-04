@@ -6,5 +6,5 @@ package com.bitso.model;
  * @author Andres Ortiz
  */
 public enum MessageType {
-    ADD, DELETE, MODIFY
+    ADD, DELETE, MODIFY, PRINT
 }
