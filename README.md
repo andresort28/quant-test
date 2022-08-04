@@ -42,26 +42,37 @@ git clone https://github.com/andresort28/quant-test.git
 
 ### Screenshots
 
-1. Running the Exchange
+1. Run the Exchange
 
-![image](https://user-images.githubusercontent.com/10570609/182484475-bb7d3dbc-67c3-4c47-98dd-c07d35d81594.png)
+![image](https://user-images.githubusercontent.com/10570609/182946588-d88d2e2d-6cac-4cbb-80a5-2256313a4c29.png)
 
-2. Running the Script to send messages to the Exchange and populate an OrderBook
+2. Run the Script to send messages to the Exchange to populate an OrderBook (BTC_USD)
 
-![image](https://user-images.githubusercontent.com/10570609/182484680-2e2e5e6b-da12-451b-aea1-111fa8617506.png)
+![image](https://user-images.githubusercontent.com/10570609/182946880-30079f53-6aff-4aaf-a047-ebf7238e8680.png)
 
-3. Exchange printing the Orders and the OrderBook
+3. Exchange receives the message and process each connection printing the Orders and OrderBook Maps
 
-![image](https://user-images.githubusercontent.com/10570609/182484869-871ca92f-fd1d-40b4-9f85-014bb91a4539.png)
+![image](https://user-images.githubusercontent.com/10570609/182947902-78a49c84-bf25-4631-ae96-3d2759fc0b94.png)
 
-4. Sending a new Buy Order (price=400, amount=7) to the Exchange
+![image](https://user-images.githubusercontent.com/10570609/182948049-c0a37a6b-3695-4dde-887c-c257685d8acf.png)
 
-![image](https://user-images.githubusercontent.com/10570609/182485092-4d1a9aba-a9ab-4ae5-95d6-f7be09f9047b.png)
+4. Run the Script to send a new Buy Trade (price=400, amount=10) to the Exchange (To fill 2 Sell Orders at price=400)
 
-5. Matching Engine filling the Order with the first and the second Order in Ask Side (price=400) according to FIFO
+![image](https://user-images.githubusercontent.com/10570609/182948885-aa14c95e-d2ce-481c-80ba-01a84964ff76.png)
 
-![image](https://user-images.githubusercontent.com/10570609/182485377-8d5e2b35-3ac6-43de-9bae-ce68ea506e82.png)
+5. Exchange add the new Buy Order and the Matching Engine try to fill the new Trade with the 1st and 2nd Sell Orders (price=400) in the Ask Side with FIFO order
 
+![image](https://user-images.githubusercontent.com/10570609/182949471-55a754a0-8e61-4e5f-81c6-6b15062d6096.png)
+
+6. Run the Script to send a new Print message to the Exchange
+
+![image](https://user-images.githubusercontent.com/10570609/182949108-eb252a14-d6c6-44b5-920f-bf71e544e5a9.png)
+
+7. Exchange prints the final OrderBook with the 1st Sell Order (price=400) with new amount of 50 (before 51)
+
+![image](https://user-images.githubusercontent.com/10570609/182949578-9e8b1457-981d-4607-8ca6-64e827b91d1b.png)
+
+---
 
 ### Contact
 
