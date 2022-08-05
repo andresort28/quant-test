@@ -1,8 +1,5 @@
 package com.bitso;
 
-import com.bitso.model.Market;
-import com.bitso.repository.OrderBookRepositoryImpl;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
@@ -107,11 +104,11 @@ public class Script {
      * <p>
      * 5% of the {@link #populateHugeOrderBook()} test.
      * <p>
-     * 10 price level at both sides with 1000 orders at each level. It is equivalent to 10,000 Orders per Side (Ask & Bid). A total of 20,000 Orders in the OrderBook.
+     * 10 price level at both sides with 1000 orders at each level.
+     * It is equivalent to 10,000 Orders per Side (Ask & Bid). A total of 20,000 Orders in the OrderBook.
      * <p>
-     * For this test, comment the body of the methods {@link OrderBookRepositoryImpl#printOrders()} and
-     * {@link OrderBookRepositoryImpl#printOrderBook(Market)} ()} to skip printing all the Orders and the OrderBook
-     * each time the Exchange received a new message.
+     * For a better processing time, change the Logger configuration for INFO level only, in the file
+     * {@code /resources/logback.xml} and run the Exchange server again.
      */
     private static void populateSmallOrderBook() {
         final int initialPrice = 100;
@@ -127,11 +124,11 @@ public class Script {
     /**
      * Populate a Huge OrderBook for a stress-test.
      * <p>
-     * 100 price level at both sides with 2000 orders at each level. It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
+     * 100 price level at both sides with 2000 orders at each level.
+     * It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
      * <p>
-     * For this test, comment the body of the methods {@link OrderBookRepositoryImpl#printOrders()} and
-     * {@link OrderBookRepositoryImpl#printOrderBook(Market)} ()} to skip printing all the Orders and the OrderBook
-     * each time the Exchange received a new message.
+     * For a better processing time, change the Logger configuration for INFO level only, in the file
+     * {@code /resources/logback.xml} and run the Exchange server again.
      */
     private static void populateHugeOrderBook() {
         final int initialPrice = 100;
