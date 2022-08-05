@@ -8,7 +8,7 @@ Simplistic Framework for an Exchange
 ---
 
 ### Description
-The goal was created a simplistic framework of an exchange. I use Java NIO in order to have non-blocking I/O sockets and non-blocking data structure.
+The goal was created a simplistic framework of an exchange. I used Java NIO in order to have non-blocking I/O sockets.
 
 ### Required Software
 
@@ -50,7 +50,7 @@ MODIFY Message
 
 PRINT Message
 ```sh
-0=BITSO;1=P
+0=BITSO;1=P;6=BTC_USD
 ```
 
 ### Clone the repository
@@ -69,13 +69,22 @@ Run the following steps to take a complete test in order to populate an OrderBoo
 5. View the console logs in the `Exchange` terminal to see the entire process.
 
 ### Time complexity
-- The solution is guaranteeing `thread-safe` on all operations and still handle a time complexity of `O(1)` for the most operations with `ConcurrentHashMap` and `PriorityBlockingQueue` as data structure for the OrderBooks.
-- `O(1)` at time to SEARCH an Order in the Orders Maps. `HashMap` used to store Orders by its OrderId (`UUID`) as key.
-- `O(1)` at time to SEARCH the OrderBook of a specific Order. `ConcurrentHashMap` used to store OrderBooks by its Markets as key. 
-- `O(1)` at time to SEARCH an Order in its respective OrderBook. `ConcurrentHashMap` is used to store Orders using a Queue, by its respective Prices.
-- `O(1)` at time to ADD a new Order in its respective Side (Ask/Bid) in the OrderBook. `PriorityBlockingQueue` is used to store the Orders in (First-In First ) FIFO order.
-- `O(1)` at time to DELETE an Order that is fully filled in the OrderBook. Each OrderSide used a `PriorityBlockingQueue` so the `.remove()` remove the head of the Queue. However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could be `O(n)` in the worst case to find its index and remove it (It's just `0.025 milliseconds` to search for it among 2000 Orders with a CPU Intel Core i9 and 16 GB RAM).
-- `O(n)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook, where `n` is the total of Orders at the same price. Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation `O(n)`. Then it has to be added again which could be `O(1)` or `O(nlogn)` if a new sorting has to be done because of the creation field of the Order because it uses a `PriorityBlockingQueue` sorted by `createdAt`.
+The solution is guaranteeing `thread-safe` on all operations and still handle a time complexity of `O(1)` for the most operations with `ConcurrentHashMap` and `PriorityBlockingQueue` and non-blocking data structure for the OrderBooks.
+
+- `O(1)` at time to SEARCH an Order in the Orders Maps.
+  - `HashMap` used to store Orders by its OrderId (`UUID`) as key.
+- `O(1)` at time to SEARCH the OrderBook of a specific Order. 
+  - `ConcurrentHashMap` used to store OrderBooks by its Markets as key. 
+- `O(1)` at time to SEARCH an Order in its respective OrderBook. 
+  - `ConcurrentHashMap` is used to store Orders using a Queue, by its respective Prices.
+- `O(1)` at time to ADD a new Order in its respective Side (Ask/Bid) in the OrderBook. 
+  - `PriorityBlockingQueue` is used to store the Orders in (First-In First ) FIFO order.
+- `O(1)` at time to DELETE an Order that is fully filled in the OrderBook. 
+  - Each OrderSide used a `PriorityBlockingQueue` so the `.remove()` remove the head of the Queue. 
+  - However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could be `O(n)` in the worst case to find its index and remove it. 
+  - It's just `0.025 milliseconds` to search for it among 2000 Orders with a `CPU Intel Core i9` and `16 GB RAM`).
+- `O(n)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook where `n` is the total of Orders at the same price. 
+  - Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation `O(n)`. Then it has to be added again which could be `O(1)` or `O(nlogn)` if a new sorting has to be done because of the creation field of the Order because it uses a `PriorityBlockingQueue` sorted by `createdAt`.
 
 Note: Because this solution is just a `prototype`, it does not use any database neither any kind of indexing. However, if we used indexing it could reduce the time complexity of DELETE operation to `O(1)`.
 
