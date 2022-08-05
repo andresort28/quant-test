@@ -46,26 +46,22 @@ public class Script {
         //removeOrder();
         //updateOrder();
 
-        //--For stress-test purposes only. Read the javadocs before to run it
+        //--Small stress-test (Read the method javadocs first)
+        //populateSmallOrderBook();
+
+        //--Huge stress-test (Read the method javadocs first)
         //populateHugeOrderBook();
     }
 
     private static void populateOrderBook() {
-        RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
-        //Add Buy Orders to BTC_USD Market
-        for (int i = 1; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                String message = "0=BITSO;1=A;2=B;3=" + (i * 100) + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
-                sendMessage(message);
-            }
-        }
-        //Add Sell Orders to BTC_USD Market
-        for (int i = 4; i < 7; i++) {
-            for (int j = 0; j < 4; j++) {
-                String message = "0=BITSO;1=A;2=S;3=" + (i * 100) + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
-                sendMessage(message);
-            }
-        }
+        final int initialPrice = 100;
+        final int minPriceUnit = 100;
+        final int priceLevels = 4;
+        final int ordersPerLevel = 4;
+
+        //-- Buy Orders     from $100 to $400       4 Orders per Price level
+        //-- Sell Orders    from $500 to $800       4 Orders per Price level
+        populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
     }
 
     private static void executeTrade() {
@@ -107,34 +103,60 @@ public class Script {
     }
 
     /**
-     * Populate a Huge OrderBook for a stress-test. 100 price level at both sides with 2000 orders at each level.
+     * Populate a small OrderBook for a stress-test.
      * <p>
-     * It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
+     * 5% of the {@link #populateHugeOrderBook()} test.
+     * <p>
+     * 10 price level at both sides with 1000 orders at each level. It is equivalent to 10,000 Orders per Side (Ask & Bid). A total of 20,000 Orders in the OrderBook.
+     * <p>
+     * For this test, comment the body of the methods {@link OrderBookRepositoryImpl#printOrders()} and
+     * {@link OrderBookRepositoryImpl#printOrderBook(Market)} ()} to skip printing all the Orders and the OrderBook
+     * each time the Exchange received a new message.
+     */
+    private static void populateSmallOrderBook() {
+        final int initialPrice = 100;
+        final int minPriceUnit = 1;
+        final int priceLevels = 10;
+        final int ordersPerLevel = 1000;
+
+        //-- Buy Orders     from $100 to $109       1000 Orders per Price level
+        //-- Sell Orders    from $110 to $119       1000 Orders per Price level
+        populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
+    }
+
+    /**
+     * Populate a Huge OrderBook for a stress-test.
+     * <p>
+     * 100 price level at both sides with 2000 orders at each level. It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
      * <p>
      * For this test, comment the body of the methods {@link OrderBookRepositoryImpl#printOrders()} and
      * {@link OrderBookRepositoryImpl#printOrderBook(Market)} ()} to skip printing all the Orders and the OrderBook
      * each time the Exchange received a new message.
      */
     private static void populateHugeOrderBook() {
-        RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
-
-        final int finalPriceSell = 300;
-        final int initialPriceSell = 201;
-        // Market Spread
-        final int finalPriceBuy = 200;
-        final int initialPriceBuy = 100;
-
+        final int initialPrice = 100;
+        final int minPriceUnit = 1;
+        final int priceLevels = 100;
         final int ordersPerLevel = 2000;
 
-        //Add Buy Orders to BTC_USD Market
-        for (int i = initialPriceBuy; i <= finalPriceBuy; i++) {
+        //-- Buy Orders     from $100 to $199       2000 Orders per Price level
+        //-- Sell Orders    from $200 to $299       2000 Orders per Price level
+        populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
+    }
+
+    private static void populateOrderBook(int initialPrice, int priceLevels, int minPriceUnit, int ordersPerLevel) {
+        RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
+
+        // Add Buy Orders
+        for (int i = initialPrice; i < initialPrice + (priceLevels * minPriceUnit); i += minPriceUnit) {
             for (int j = 0; j < ordersPerLevel; j++) {
                 String message = "0=BITSO;1=A;2=B;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
                 sendMessage(message);
             }
         }
-        //Add Sell Orders to BTC_USD Market
-        for (int i = initialPriceSell; i <= finalPriceSell; i++) {
+        System.out.println("--SPREAD");
+        // Add Sell Orders
+        for (int i = initialPrice + (priceLevels * minPriceUnit); i < initialPrice + (priceLevels * minPriceUnit) * 2; i += minPriceUnit) {
             for (int j = 0; j < ordersPerLevel; j++) {
                 String message = "0=BITSO;1=A;2=S;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
                 sendMessage(message);
