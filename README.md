@@ -69,22 +69,24 @@ Run the following steps to take a complete test in order to populate an OrderBoo
 5. View the console logs in the `Exchange` terminal to see the entire process.
 
 ### Time complexity
-The solution is guaranteeing `thread-safe` on all operations and still handle a time complexity of `O(1)` for the most operations with `ConcurrentHashMap` and `PriorityBlockingQueue` and non-blocking data structure for the OrderBooks.
+The solution is guaranteeing `thread-safe` on all operations and still handle a time complexity of `O(1)` and `O(logn)` for the most operations with `ConcurrentHashMap` and `PriorityBlockingQueue` as non-blocking data structure for the OrderBooks.
 
 - `O(1)` at time to SEARCH an Order in the Orders Maps.
-  - `HashMap` used to store Orders by its OrderId (`UUID`) as key.
-- `O(1)` at time to SEARCH the OrderBook of a specific Order. 
-  - `ConcurrentHashMap` used to store OrderBooks by its Markets as key. 
-- `O(1)` at time to SEARCH an Order in its respective OrderBook. 
-  - `ConcurrentHashMap` is used to store Orders using a Queue, by its respective Prices.
-- `O(1)` at time to ADD a new Order in its respective Side (Ask/Bid) in the OrderBook. 
-  - `PriorityBlockingQueue` is used to store the Orders in (First-In First ) FIFO order.
-- `O(1)` at time to DELETE an Order that is fully filled in the OrderBook. 
-  - Each OrderSide used a `PriorityBlockingQueue` so the `.remove()` remove the head of the Queue. 
+  - `Map` used to store Orders by its OrderId (UUID) as key.
+- `O(1)` at time to SEARCH the OrderBook where an Order is. 
+  - `Map` used to store OrderBooks by Markets as key. 
+- `O(1)` at time to SEARCH the Orders in its respective OrderBook. 
+  - `Map` is used to store Order's Queues by Prices as key.
+- `O(1)` at time to SEARCH the highest priority Order in an OrderSide (Ask/Bid)
+  - `Queue` is used to store Orders using the creation date as the defined priority. 
+- `O(logn)` at time to ADD a new Order in its respective OrderSide (Ask/Bid) in the OrderBook. 
+  - `Queue` is used to store the Orders in (First-In First) FIFO order, but in this case it is a PriorityBlockingQueue.
+- `O(logn)` (worst case) at time to DELETE an Order that is fully filled in the OrderBook. 
+  - Each OrderSide uses a `Queue` so the `.remove()` method, remove the head of the Queue. 
   - However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could be `O(n)` in the worst case to find its index and remove it. 
-  - It's just `0.025 milliseconds` to search for it among 2000 Orders with a `CPU Intel Core i9` and `16 GB RAM`).
-- `O(n)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook where `n` is the total of Orders at the same price. 
-  - Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation `O(n)`. Then it has to be added again which could be `O(1)` or `O(nlogn)` if a new sorting has to be done because of the creation field of the Order because it uses a `PriorityBlockingQueue` sorted by `createdAt`.
+  - It's just `0.025 ms` to search for it among 2000 Orders with a `CPU=IntelCorei9` and `RAM=16GB`).
+- `O(logn)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook where `n` is the total of Orders at the same Price. 
+  - Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation, and then it needs to be added again.
 
 Note: Because this solution is just a `prototype`, it does not use any database neither any kind of indexing. However, if we used indexing it could reduce the time complexity of DELETE operation to `O(1)`.
 
