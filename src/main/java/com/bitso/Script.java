@@ -1,6 +1,13 @@
 package com.bitso;
 
+import com.bitso.model.Market;
+import com.bitso.model.Message;
+import com.bitso.model.MessageType;
+import com.bitso.model.OrderSide;
+import com.bitso.shared.Encoder;
+
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
 
@@ -30,7 +37,7 @@ public class Script {
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         //--Populate OrderBook for BTC_USD without any possible matching operation
-        //populateOrderBook();
+        populateOrderBook();
 
         //--Test Matching Engine creating an Order in BTC_USD that match a price in the populated OrderBook
         //executeTrade();
@@ -50,6 +57,13 @@ public class Script {
         //populateHugeOrderBook();
     }
 
+    /**
+     * Populate a new simple OrderBook
+     * <p>
+     * 3 price levels at both sides with 4 orders at each level.
+     * <p>
+     * It is equivalent to 12 Orders per Side (Ask & Bid). A total of 24 Orders in the OrderBook.
+     */
     private static void populateOrderBook() {
         final int initialPrice = 100;
         final int minPriceUnit = 100;
@@ -61,42 +75,66 @@ public class Script {
         populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
     }
 
+    /**
+     * Send a new Order (Trade) to the Exchange
+     */
     private static void executeTrade() {
-        final String price = "400";
-        final String amount = "5";
-        String message = "0=BITSO;1=A;2=B;3=" + price + ";4=" + amount + ";6=BTC_USD";
-        sendMessage(message);
+        Message msg = Message.builder()
+                .messageType(MessageType.ADD)
+                .orderSide(OrderSide.BUY)
+                .price(400)
+                .amount(5)
+                .market(Market.BTC_USD)
+                .build();
+        sendMessage(msg);
     }
 
+    /**
+     * Print the current state of the BTC/USD OrderBook
+     */
     private static void printOrderBook() {
-        String message = "0=BITSO;1=P;6=BTC_USD";
-        sendMessage(message);
+        Message msg = Message.builder()
+                .messageType(MessageType.PRINT)
+                .market(Market.BTC_USD)
+                .build();
+        sendMessage(msg);
     }
 
+    /**
+     * Send a new Order to the Exchange
+     */
     private static void createOrder() {
-        String message = "0=BITSO;1=A;2=B;3=300;4=50;6=BTC_USD";
-        sendMessage(message);
+        Message msg = Message.builder()
+                .messageType(MessageType.ADD)
+                .orderSide(OrderSide.BUY)
+                .price(300)
+                .amount(50)
+                .market(Market.BTC_USD)
+                .build();
+        sendMessage(msg);
     }
 
+    /**
+     * Delete an existing Order in the Exchange
+     */
     private static void removeOrder() {
-        String uuid = "91f499dc-e70d-44c3-b776-aecb48b0bfa0";
-        removeOrder(uuid);
+        Message msg = Message.builder()
+                .messageType(MessageType.DELETE)
+                .orderId(UUID.fromString("91f499dc-e70d-44c3-b776-aecb48b0bfa0"))
+                .build();
+        sendMessage(msg);
     }
 
-    private static void removeOrder(String uuid) {
-        String message = "0=BITSO;1=D;5=" + uuid;
-        sendMessage(message);
-    }
-
+    /**
+     * Modify an existing Order in the Exchange
+     */
     private static void updateOrder() {
-        String uuid = "c9bf81f5-02d8-4ebe-8316-9f6cc0c1352c";
-        String amount = "99";
-        updateOrder(uuid, amount);
-    }
-
-    private static void updateOrder(String uuid, String amount) {
-        String message = "0=BITSO;1=M;4=" + amount + ";5=" + uuid;
-        sendMessage(message);
+        Message msg = Message.builder()
+                .messageType(MessageType.MODIFY)
+                .orderId(UUID.fromString("c9bf81f5-02d8-4ebe-8316-9f6cc0c1352c"))
+                .amount(99)
+                .build();
+        sendMessage(msg);
     }
 
     /**
@@ -104,7 +142,7 @@ public class Script {
      * <p>
      * 1,25% of the {@link #populateHugeOrderBook()} test.
      * <p>
-     * 5 price level at both sides with 500 orders at each level.
+     * 5 price levels at both sides with 500 orders at each level.
      * It is equivalent to 2,500 Orders per Side (Ask & Bid). A total of 5,000 Orders in the OrderBook.
      * <p>
      * For a better processing time, change the Logger configuration for INFO level only, in the file
@@ -124,7 +162,7 @@ public class Script {
     /**
      * Populate a Huge OrderBook for a stress-test.
      * <p>
-     * 100 price level at both sides with 2000 orders at each level.
+     * 100 price levels at both sides with 2000 orders at each level.
      * It is equivalent to 200,000 Orders per Side (Ask & Bid). A total of 400,000 Orders in the OrderBook.
      * <p>
      * For a better processing time, change the Logger configuration for INFO level only, in the file
@@ -141,28 +179,55 @@ public class Script {
         populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
     }
 
+    /**
+     * Populate OrderBook given the lowest price, the level per price, the minimum price unit and the total of
+     * orders creating per price level.
+     *
+     * @param initialPrice
+     * @param priceLevels
+     * @param minPriceUnit
+     * @param ordersPerLevel
+     */
     private static void populateOrderBook(int initialPrice, int priceLevels, int minPriceUnit, int ordersPerLevel) {
         RandomGenerator gen = RandomGenerator.of("L128X256MixRandom");
 
         // Add Buy Orders
         for (int i = initialPrice; i < initialPrice + (priceLevels * minPriceUnit); i += minPriceUnit) {
             for (int j = 0; j < ordersPerLevel; j++) {
-                String message = "0=BITSO;1=A;2=B;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
-                sendMessage(message);
+                Message msg = Message.builder()
+                        .messageType(MessageType.ADD)
+                        .orderSide(OrderSide.BUY)
+                        .price(i)
+                        .amount(gen.nextInt(100))
+                        .market(Market.BTC_USD)
+                        .build();
+                sendMessage(msg);
             }
         }
         System.out.println("--SPREAD");
         // Add Sell Orders
         for (int i = initialPrice + (priceLevels * minPriceUnit); i < initialPrice + (priceLevels * minPriceUnit) * 2; i += minPriceUnit) {
             for (int j = 0; j < ordersPerLevel; j++) {
-                String message = "0=BITSO;1=A;2=S;3=" + i + ";4=" + gen.nextInt(100) + ";6=BTC_USD";
-                sendMessage(message);
+                Message msg = Message.builder()
+                        .messageType(MessageType.ADD)
+                        .orderSide(OrderSide.SELL)
+                        .price(i)
+                        .amount(gen.nextInt(100))
+                        .market(Market.BTC_USD)
+                        .build();
+                sendMessage(msg);
             }
         }
     }
 
-    private static void sendMessage(String message) {
-        System.out.println("Message to send: " + message);
+    /**
+     * Encode the message according to the communication protocol and send it to the Exchange
+     *
+     * @param msg
+     */
+    private static void sendMessage(Message msg) {
+        String message = Encoder.encode(msg);
+        System.out.println("Message sent: " + message);
         try {
             Client client = new Client();
             client.sendMessage(message);
