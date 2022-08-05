@@ -37,7 +37,7 @@ public class Script {
      */
     public static void main(String[] args) throws IOException, InterruptedException {
         //--Populate OrderBook for BTC_USD without any possible matching operation
-        populateOrderBook();
+        //populateOrderBook();
 
         //--Test Matching Engine creating an Order in BTC_USD that match a price in the populated OrderBook
         //executeTrade();

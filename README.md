@@ -25,7 +25,7 @@ Tag | Description | Values | Description
 1 | MessageType | *A*,*D*,*M*, *P* | Add, Delete, Modify, Print
 2 | OrderSide | *B*,*S* | Buy, Sell
 3 | Price | e.g. 100.0 | Order Price
-4 | Amount | e.g. 72 | Order Volume
+4 | Amount | e.g. 72.0 | Order Volume
 5 | OrderId | e.g. 123e4567-e89b-12d3-a456-426614174000 | Unique UUID
 6 | Market | e.g. *BTC_USD* | Symbol Market
 
@@ -80,11 +80,11 @@ The solution is guaranteeing `thread-safe` on all operations and still handle a 
 - `O(1)` at time to SEARCH the highest priority Order in an OrderSide (Ask/Bid)
   - `Queue` is used to store Orders using the creation date as the defined priority. 
 - `O(logn)` at time to ADD a new Order in its respective OrderSide (Ask/Bid) in the OrderBook. 
-  - `Queue` is used to store the Orders in (First-In First) FIFO order, but in this case it is a PriorityBlockingQueue.
+  - `Queue` is used to store the Orders in (First-In First-Out) FIFO order, but in this case it is a PriorityBlockingQueue.
 - `O(logn)` (worst case) at time to DELETE an Order that is fully filled in the OrderBook. 
   - Each OrderSide uses a `Queue` so the `.remove()` method, remove the head of the Queue. 
-  - However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could be `O(n)` in the worst case to find its index and remove it. 
-  - It's just `0.025 ms` to search for it among 2000 Orders with a `CPU=IntelCorei9` and `RAM=16GB`).
+  - However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could take `O(n)` in the worst case finding its index. 
+  - It only takes `0.025 ms` to search for an Order 2000 Orders with (`CPU=IntelCorei9` and `RAM=16GB`).
 - `O(logn)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook where `n` is the total of Orders at the same Price. 
   - Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation, and then it needs to be added again.
 

@@ -220,7 +220,7 @@ class OrderBook {
 
     /**
      * Print the sorted Orders of a side (Ask or Bid). Only for testing purposes.
-     * At time to sort the keys to print them in asc or desc order, the performance will go from O(1) to O(Log(N))
+     * At time to sort the keys to print them in desc order, the time complexity could go from O(1) to O(nlogn) in the worst case
      *
      * @param sideOrders
      */

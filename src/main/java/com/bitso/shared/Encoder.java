@@ -89,6 +89,7 @@ public class Encoder {
             case ADD -> builder.append(encodeAddMessage(msg));
             case DELETE -> builder.append(encodeDeleteMessage(msg));
             case MODIFY -> builder.append(encodeModifyMessage(msg));
+            case PRINT -> builder.append(encodePrintMessage(msg));
         }
         return builder.toString();
     }
@@ -112,6 +113,12 @@ public class Encoder {
         StringBuilder builder = new StringBuilder("1=M").append(DELIMITER)
                 .append(encodeAmount(msg)).append(DELIMITER)
                 .append(encodeOrderId(msg));
+        return builder.toString();
+    }
+
+    private static String encodePrintMessage(Message msg) {
+        StringBuilder builder = new StringBuilder("1=P").append(DELIMITER)
+                .append(encodeMarket(msg));
         return builder.toString();
     }
 
