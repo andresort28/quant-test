@@ -56,11 +56,11 @@ public class Script {
     private static void populateOrderBook() {
         final int initialPrice = 100;
         final int minPriceUnit = 100;
-        final int priceLevels = 4;
+        final int priceLevels = 3;
         final int ordersPerLevel = 4;
 
-        //-- Buy Orders     from $100 to $400       4 Orders per Price level
-        //-- Sell Orders    from $500 to $800       4 Orders per Price level
+        //-- Buy Orders     from $100 to $300       4 Orders per Price level
+        //-- Sell Orders    from $400 to $600       4 Orders per Price level
         populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
     }
 

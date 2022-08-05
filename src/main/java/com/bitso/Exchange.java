@@ -20,6 +20,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Iterator;
 
 import static com.bitso.shared.Config.BUFFER_CAPACITY;
@@ -120,10 +122,12 @@ public class Exchange {
         ByteBuffer buffer = ByteBuffer.allocate(BUFFER_CAPACITY);
         int read = clientChannel.read(buffer);
         if (read > 0) {
+            final Instant start = Instant.now();
             String message = new String(buffer.array()).trim();
             log.info("Raw message received: {}", message);
             process(message);
-            log.info("Operation finished");
+            final Instant stop = Instant.now();
+            log.info("Operation finished. Duration: {}", Duration.between(start, stop));
 
             /*
             //--Exchange does not respond to clients (out of the scope of this prototype)--
