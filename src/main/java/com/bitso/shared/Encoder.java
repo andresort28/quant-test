@@ -29,7 +29,7 @@ import java.util.UUID;
  *   <tr>
  *     <th scope="row">1</th>
  *     <td>MessageType</td>
- *     <td>"A","D","M", "P"</td>
+ *     <td>"A","D","M","P"</td>
  *     <td>Add, Delete, Modify, Print</td>
  *   </tr>
  *   <tr>
@@ -68,11 +68,11 @@ import java.util.UUID;
  * <blockquote>
  * <strong>Samples of Messages</strong>
  * <ul>
+ *     <li>"0=BITSO;1=P;6=BTC_USD" -> 21 bytes</li>
  *     <li>"0=BITSO;1=A;2=B;3=23728.9;4=0.01;6=BTC_USD" -> 42 bytes</li>
  *     <li>"0=BITSO;1=A;2=S;3=24001.25;4=0.02;6=BTC_USD" -> 42 bytes</li>
  *     <li>"0=BITSO;1=D;5=12300000-0000-0000-0000-000000000000" -> 50 bytes</li>
  *     <li>"0=BITSO;1=M;4=0.02;5=12300000-0000-0000-0000-000000000000" -> 57 bytes</li>
- *     <li>"0=BITSO;1=P;6=BTC_USD" -> 21 bytes</li>
  * </ul>
  * </blockquote>
  *

@@ -59,17 +59,28 @@ Clone the repository to any folder in your computer
 git clone https://github.com/andresort28/quant-test.git
 ```
 
-### Run a complete test:
+### Run a complete test
 Run the following steps to take a complete test in order to populate an OrderBook and fully filled a trade:
 
 1. Start the `Exchange` server just running the `main()` method of the Exchange class.
-2. Uncomment only `populateOrderBook()` in the `Script.main()` method in the `Script` class and run. It will populate `BTC/USD` Market with BUY and SELL Orders.
-3. View the console logs in the Exchange terminal and select an Order in the OrderBook you want to filled. The method `Script.executeTrade()` will send a BUY Order, so you can choose an Order to fill in the Ask Side of the OrderBook and then, you can edit the variables price and amount in `Script.executeTrade()` method in order to fill that SELL Order you choose partially or completely.
-4. Comment `populateOrderBook()` and uncomment only `executeTrade()` and `printOrderBook()` in `Script.main()` method and run. It will try to fill the new Buy Trade you send to the Exchange against the Order you choose visually. It will also print the final OrderBook state.
-5. View the console logs in the Exchange terminal to see entire process.
+2. Uncomment only `populateOrderBook()` in the `Script.main()` method and run. It will populate `BTC/USD` Market with BUY and SELL Orders.
+3. View the console logs in the `Exchange` terminal and select an Order in the OrderBook you want to fill. Take a look that the method `Script.executeTrade()` will send a BUY Order (by default), so you can choose an Order to fill in the `Ask Side` of the OrderBook and then, you can edit the variables `price` and `amount` inside `Script.executeTrade()` method in order to fill those SELL Orders you want partially or completely.
+4. Comment `populateOrderBook()` and uncomment only `executeTrade()` and `printOrderBook()` in `Script.main()` method and run. It will try to fill the new BUY Trade you send to the Exchange against the Order you choose above. It will also print the final OrderBook state.
+5. View the console logs in the `Exchange` terminal to see the entire process.
+
+### Time complexity
+- The solution is guaranteeing `thread-safe` on all operations and still handle a time complexity of `O(1)` for the most operations with `ConcurrentHashMap` and `PriorityBlockingQueue` as data structure for the OrderBooks.
+- `O(1)` at time to SEARCH an Order in the Orders Maps. `HashMap` used to store Orders by its OrderId (`UUID`) as key.
+- `O(1)` at time to SEARCH the OrderBook of a specific Order. `ConcurrentHashMap` used to store OrderBooks by its Markets as key. 
+- `O(1)` at time to SEARCH an Order in its respective OrderBook. `ConcurrentHashMap` is used to store Orders using a Queue, by its respective Prices.
+- `O(1)` at time to ADD a new Order in its respective Side (Ask/Bid) in the OrderBook. `PriorityBlockingQueue` is used to store the Orders in (First-In First ) FIFO order.
+- `O(1)` at time to DELETE an Order that is fully filled in the OrderBook. Each OrderSide used a `PriorityBlockingQueue` so the `.remove()` remove the head of the Queue. However, when an arbitrary Order needs to be removed from the OrderBook (Queue) it could be `O(n)` in the worst case to find its index and remove it (It's just `0.025 milliseconds` to search for it among 2000 Orders with a CPU Intel Core i9 and 16 GB RAM).
+- `O(n)` (worst case) at time to MODIFY an Order that is partially filled in the OrderBook, where `n` is the total of Orders at the same price. Because OrderBook uses Queues, the Order must be first removed from the Queue arbitrarily, which implies the same time complexity of DELETE operation `O(n)`. Then it has to be added again which could be `O(1)` or `O(nlogn)` if a new sorting has to be done because of the creation field of the Order because it uses a `PriorityBlockingQueue` sorted by `createdAt`.
+
+Note: Because this solution is just a `prototype`, it does not use any database neither any kind of indexing. However, if we used indexing it could reduce the time complexity of DELETE operation to `O(1)`.
 
 ### Stress-test
-- The `Script` contains the method `populateHugeOrderBook()` in order to create the `400,000` operations in the OrderBook (2000 orders for each of the 100 prices on each side). However, since it takes so long to receive all 400,000 messages in the Exchange, you can test with a smaller case to see that we are guaranteeing `thread-safe` on all operations and still handle an algorithmic complexity of `O(1)` with the data structures used as `ConcurrentHashMap` and `PriorityBlockingQueue` for the OrderBook.
+- The `Script` contains the method `populateHugeOrderBook()` in order to create the `400,000` operations in the OrderBook (2000 orders for each of the 100 prices on each side). However, since it takes so long to receive all 400,000 messages in the Exchange, you can test with a smaller case to see that I am guaranteeing `thread-safe` on all operations and still handle an algorithmic complexity of `O(1)` with the data structures used as `ConcurrentHashMap` and `PriorityBlockingQueue` for the OrderBook.
 
 ### Implementation Notes
 - The idea is to create a simplistic framework, that's why I did not use `Netty` directly as the client-server framework, and I used `NIO` instead.

@@ -86,8 +86,10 @@ class OrderBook {
     protected Order update(Order order, Order currentOrder) {
         Order newOrder;
         if (order.getAmount() > currentOrder.getAmount()) {
+            //Order.createdAt will be a new
             newOrder = new Order(order.getId(), order.getMarket(), order.getSide(), order.getPrice(), order.getAmount());
         } else {
+            //Order.createdAt will be the same
             newOrder = order;
         }
         boolean result = remove(currentOrder);
