@@ -102,10 +102,10 @@ public class Script {
     /**
      * Populate a small OrderBook for a stress-test.
      * <p>
-     * 5% of the {@link #populateHugeOrderBook()} test.
+     * 1,25% of the {@link #populateHugeOrderBook()} test.
      * <p>
-     * 10 price level at both sides with 1000 orders at each level.
-     * It is equivalent to 10,000 Orders per Side (Ask & Bid). A total of 20,000 Orders in the OrderBook.
+     * 5 price level at both sides with 500 orders at each level.
+     * It is equivalent to 2,500 Orders per Side (Ask & Bid). A total of 5,000 Orders in the OrderBook.
      * <p>
      * For a better processing time, change the Logger configuration for INFO level only, in the file
      * {@code /resources/logback.xml} and run the Exchange server again.
@@ -113,11 +113,11 @@ public class Script {
     private static void populateSmallOrderBook() {
         final int initialPrice = 100;
         final int minPriceUnit = 1;
-        final int priceLevels = 10;
-        final int ordersPerLevel = 1000;
+        final int priceLevels = 5;
+        final int ordersPerLevel = 500;
 
-        //-- Buy Orders     from $100 to $109       1000 Orders per Price level
-        //-- Sell Orders    from $110 to $119       1000 Orders per Price level
+        //-- Buy Orders     from $100 to $104       500 Orders per Price level
+        //-- Sell Orders    from $105 to $109       500 Orders per Price level
         populateOrderBook(initialPrice, priceLevels, minPriceUnit, ordersPerLevel);
     }
 

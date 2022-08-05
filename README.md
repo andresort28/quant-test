@@ -90,8 +90,50 @@ The solution is guaranteeing `thread-safe` on all operations and still handle a 
 
 Note: Because this solution is just a `prototype`, it does not use any database neither any kind of indexing. However, if we used indexing it could reduce the time complexity of DELETE operation to `O(1)`.
 
-### Stress-test
-- The `Script` contains the method `populateHugeOrderBook()` in order to create the `400,000` operations in the OrderBook (2000 orders for each of the 100 prices on each side). However, since it takes so long to receive all 400,000 messages in the Exchange, you can test with a smaller case to see that I am guaranteeing `thread-safe` on all operations and still handle an algorithmic complexity of `O(1)` with the data structures used as `ConcurrentHashMap` and `PriorityBlockingQueue` for the OrderBook.
+### Stress-tests
+
+The `Script` contains the two following stress-tests:
+
+- Small stress-test:
+  - The method `populateSmallOrderBook()` create `5,000` Orders in the OrderBook (500 orders for each of the 5 prices on
+    each side).
+  - It is only the 1,25% of the Huge stress-test, but it's faster to run to measure processing time.
+  - The following times we captured with this stress-test on a CPU Intel Core i9 and a RAM of 16GB:
+    - ADD Messages
+      - Message | Amount | Orders filled | Time
+        --- | --- | --- | ---
+        ADD | 10 | 1 | 0.000775s
+        ADD | 100 | 2 | 0.000951s
+        ADD | 500 | 15 | 0.001231s
+        ADD | 1000 | 21 | 0.001006s
+    - MODIFY Messages (by UUID)
+      - Message | Amount | Bigger Amount | Time
+        --- | --- | --- | ---
+        MODIFY | 39 | 40 | 0.0018s
+        MODIFY | 86 | 90 | 0.000753s
+        MODIFY | 27 | 30 | 0.000904s
+        MODIFY | 2 | 99 | 0.000611s
+    - MODIFY Messages (by UUID)
+      - Message | Amount | Smaller Amount | Time
+        --- | --- | --- | ---
+        MODIFY | 90 | 10 | 0.000831s
+        MODIFY | 3 | 1 | 0.000902s
+        MODIFY | 68 | 30 | 0.000743s
+        MODIFY | 71 | 2 | 0.000850S
+    - DELETE Messages (by UUID)
+      - Message | Time
+        --- | ---
+        DELETE | 0.000922s
+        DELETE | 0.000559s
+        DELETE | 0.000718s
+        DELETE | 0.000239s
+
+- Huge stress-test:
+  - The method `populateHugeOrderBook()` create `400,000` Orders in the OrderBook (2000 orders for each of the 100
+    prices on each side).
+  - However, since it takes so long to receive all 400,000 messages in the Exchange, you can stress the Exchange with
+    the `Small stress-test` to verify the above results and make sure that it guarantee `thread-safe` on all operations
+    and a time complexity of `O(1)` and `O(logn)` in the all the operation in the OrderBook.
 
 ### Implementation Notes
 - The idea is to create a simplistic framework, that's why I did not use `Netty` directly as the client-server framework, and I used `NIO` instead.
