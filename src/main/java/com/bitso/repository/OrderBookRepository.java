@@ -3,6 +3,7 @@ package com.bitso.repository;
 import com.bitso.model.Market;
 import com.bitso.model.Order;
 
+import java.util.Collection;
 import java.util.Queue;
 import java.util.UUID;
 
@@ -43,14 +44,6 @@ public interface OrderBookRepository {
     void remove(Order order);
 
     /**
-     * Exist an OrderBook of a given {@link Market}
-     *
-     * @param market
-     * @return
-     */
-    boolean orderBookExist(Market market);
-
-    /**
      * Fill the Order in the OrderBook
      *
      * @param order
@@ -59,7 +52,21 @@ public interface OrderBookRepository {
     boolean fillOrder(Order order);
 
     /**
-     * Get Ask Orders from the OrderBook of a specific price of a certain {@link Market}
+     * Get a collection of all Orders in the Exchange
+     *
+     * @return
+     */
+    Collection<Order> getOrders();
+
+    /**
+     * Get the OrderBook given a {@link Market}
+     *
+     * @return
+     */
+    OrderBook getOrderBook(Market market);
+
+    /**
+     * Get Ask Orders from the OrderBook given a price and a {@link Market}
      *
      * @param market
      * @param price
@@ -68,17 +75,11 @@ public interface OrderBookRepository {
     Queue<Order> getAskOrders(Market market, double price);
 
     /**
-     * Get Bid Orders from the OrderBook of a specific price of a certain {@link Market}
+     * Get Bid Orders from the OrderBook given a price and a {@link Market}
      *
      * @param market
      * @param price
      * @return
      */
     Queue<Order> getBidOrders(Market market, double price);
-
-    /**
-     * Print the OrderBook of a given {@link Market}
-     * @param market
-     */
-    void printOrderBook(Market market);
 }

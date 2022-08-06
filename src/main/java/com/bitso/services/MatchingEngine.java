@@ -29,7 +29,7 @@ public class MatchingEngine {
     }
 
     /**
-     * Execute the trade trying to fill the Order in the OrderBook
+     * Execute the Trade trying to fill the Order in the OrderBook
      * @param order
      * @return
      */

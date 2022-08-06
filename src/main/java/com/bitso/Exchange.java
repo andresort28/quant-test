@@ -6,6 +6,7 @@ import com.bitso.exception.OrderNotFoundException;
 import com.bitso.model.Market;
 import com.bitso.model.Message;
 import com.bitso.model.Order;
+import com.bitso.services.MatchingEngine;
 import com.bitso.services.OrderBookService;
 import com.bitso.services.OrderBookServiceImpl;
 import com.bitso.services.OrderService;
@@ -41,6 +42,7 @@ public class Exchange {
     private Selector selector;
     private final OrderService orderService = OrderServiceImpl.getInstance();
     private final OrderBookService orderBookService = OrderBookServiceImpl.getInstance();
+    private final MatchingEngine matchingEngine = MatchingEngine.getInstance();
 
     public static void main(String[] args) throws IOException {
         Exchange exchange = Exchange.getInstance();
@@ -157,18 +159,22 @@ public class Exchange {
                     Order order = orderService.parseOrder(msg);
                     log.info("Adding new Order {}", order.getId());
                     orderService.addOrder(order);
+                    print(msg.getMarket());
+                    matchingEngine.executeTrade(order);
                 }
                 case DELETE -> {
                     log.info("Deleting Order {}", msg.getOrderId());
                     orderService.deleteOrder(msg.getOrderId());
+                    print(msg.getMarket());
                 }
                 case MODIFY -> {
                     log.info("Modifying Order {}, New Amount {}", msg.getOrderId(), msg.getAmount());
                     orderService.modifyOrder(msg.getOrderId(), msg.getAmount());
+                    print(msg.getMarket());
                 }
                 case PRINT -> {
                     log.info("Print OrderBook {}", msg.getMarket());
-                    printOrderBook(msg.getMarket());
+                    print(msg.getMarket());
                 }
             }
         } catch (MessageNotSupportedException e) {
@@ -179,11 +185,12 @@ public class Exchange {
     }
 
     /**
-     * Print OrderBook given a {@link Market}
+     * Print Orders and OrderBook given a {@link Market}
      *
      * @param market
      */
-    private void printOrderBook(Market market) {
+    private void print(Market market) {
+        orderService.printOrders();
         orderBookService.printOrderBook(market);
     }
 }

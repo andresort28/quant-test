@@ -47,4 +47,9 @@ public interface OrderService {
      * @throws OrderNotFoundException
      */
     void modifyOrder(UUID orderId, double newAmount) throws OrderNotFoundException;
+
+    /**
+     * Print all Orders currently on the Exchange
+     */
+    void printOrders();
 }

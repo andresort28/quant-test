@@ -25,7 +25,7 @@ public class Script {
      *     filled. The method {@link #executeTrade()} will send a BUY Order, so you can choose an Order to fill in the {@code Ask Side}
      *     of the OrderBook and then, you can edit the variables {@code price} and {@code amount} in {@link #executeTrade()}
      *     method in order to fill that SELL Order you choose partially or completely.</li>
-     *     <li>4. Comment {@link #populateOrderBook()} and Uncomment only {@link #executeTrade()} and {@link #printOrderBook()}
+     *     <li>4. Comment {@link #populateOrderBook()} and Uncomment only {@link #executeTrade()} and {@link #print()}
      *     in this {@code main()} method and run. It will try to fill the new Order you send to the Exchange against the
      *     order you decided to select visually. It will also print the final OrderBook state</li>
      *     <li>5. View the console logs in the {@code Exchange} terminal to see entire process.</li>
@@ -42,8 +42,8 @@ public class Script {
         //--Test Matching Engine creating an Order in BTC_USD that match a price in the populated OrderBook
         //executeTrade();
 
-        //--Print the current OrderBook in the Exchange for Market BTC_USD
-        //printOrderBook();
+        //--Print the Orders and the OrderBook currently on the Exchange for Market BTC_USD
+        //print();
 
         //--Test Individual messages
         //createOrder();
@@ -90,9 +90,9 @@ public class Script {
     }
 
     /**
-     * Print the current state of the BTC/USD OrderBook
+     * Print the Orders and the current state of the BTC/USD OrderBook
      */
-    private static void printOrderBook() {
+    private static void print() {
         Message msg = Message.builder()
                 .messageType(MessageType.PRINT)
                 .market(Market.BTC_USD)

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,7 +20,7 @@ import java.util.concurrent.PriorityBlockingQueue;
  */
 @Getter
 @Slf4j
-class OrderBook {
+public class OrderBook {
 
     /**
      * Ask side of the OrderBook (Sell Orders)
@@ -106,7 +105,7 @@ class OrderBook {
      * @param order
      * @return List with all Order filled
      */
-    public List<Order> fillOrder(Order order) {
+    protected List<Order> fillOrder(Order order) {
         final double price = order.getPrice();
         final UUID orderId = order.getId();
         List<Order> filled = new ArrayList<>();
@@ -205,30 +204,5 @@ class OrderBook {
             }
         }
         return filled;
-    }
-
-    /**
-     * Print the entire OrderBook
-     */
-    protected void print() {
-        log.debug("------Ask Orders:");
-        printSide(askOrders);
-
-        log.debug("------Bid Orders:");
-        printSide(bidOrders);
-    }
-
-    /**
-     * Print the sorted Orders of a side (Ask or Bid). Only for testing purposes.
-     * At time to sort the keys to print them in desc order, the time complexity could go from O(1) to O(nlogn) in the worst case
-     *
-     * @param sideOrders
-     */
-    private void printSide(ConcurrentMap<Double, PriorityBlockingQueue<Order>> sideOrders) {
-        TreeSet<Double> keys = (TreeSet<Double>) new TreeSet<>(sideOrders.keySet()).descendingSet();
-        keys.forEach(price -> {
-            log.debug("--------Price $ {}:", price);
-            sideOrders.get(price).forEach(order -> log.debug("----------{}", order));
-        });
     }
 }
