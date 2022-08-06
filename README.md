@@ -6,6 +6,9 @@ Prototype of an Exchange
 
 Simplistic Framework for an Exchange
 ---
+> **Note**
+> Bonus track included: function to calculate the equilibrium mid-market price (EP) which is the equilibrium price of cumulative discounted total volume functions of bid and ask side; given the parameter of half-life. See the last screenshot image.
+
 
 ### Description
 The goal was created a simplistic framework of an exchange. I used Java NIO in order to have non-blocking I/O sockets.
@@ -178,6 +181,12 @@ The `Script` contains the two following stress-tests:
 7. Exchange prints the final OrderBook with the 1st Sell Order (price=400) with new amount of 50 (before 51)
 
 ![image](https://user-images.githubusercontent.com/10570609/182949578-9e8b1457-981d-4607-8ca6-64e827b91d1b.png)
+
+8. BONUS TRACK: 
+The Script contains a method to run the test to populate the OrderBook with a sample case and calculate the equilibrium mid-market price (EP) which is the equilibrium price of cumulative discounted total volume functions of bid and ask side; given the parameter of half-life.
+
+![image](https://user-images.githubusercontent.com/10570609/183268417-9a76148c-1132-4cd1-8874-8ada1829d336.png)
+
 
 ---
 
