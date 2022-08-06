@@ -150,7 +150,7 @@ public class Exchange {
      *
      * @param message
      */
-    private void process(String message) {
+    protected void process(String message) {
         try {
             Message msg = Decoder.decode(message);
             log.info("Decoded message: {}", msg);
@@ -175,6 +175,9 @@ public class Exchange {
                 case PRINT -> {
                     log.info("Print OrderBook {}", msg.getMarket());
                     print(msg.getMarket());
+
+                    //Testing Only: Use of PRINT Message to calculate the equilibrium mid-market price (EP)
+                    log.debug("Equilibrium mid-market price (EP): {}", orderBookService.getEquilibriumMidMarketPrice(msg.getMarket(), 0.5));
                 }
             }
         } catch (MessageNotSupportedException e) {

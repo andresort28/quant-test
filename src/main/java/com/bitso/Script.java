@@ -29,6 +29,8 @@ public class Script {
      *     in this {@code main()} method and run. It will try to fill the new Order you send to the Exchange against the
      *     order you decided to select visually. It will also print the final OrderBook state</li>
      *     <li>5. View the console logs in the {@code Exchange} terminal to see entire process.</li>
+     *     <li>6. BONUS TRACK: To calculate the Equilibrium mid-market price (EP) given a sample case, only uncomment
+     *     {@link #testEquilibriumMidMarketPrice()} in the {@code main} method and run it.</li>
      * </ul>
      *
      * @param args
@@ -55,6 +57,9 @@ public class Script {
 
         //--Huge stress-test (Read the method javadocs first)
         //populateHugeOrderBook();
+
+        //--BONUS TRACK: function to calculate the equilibrium mid-market price (EP)
+        //testEquilibriumMidMarketPrice();
     }
 
     /**
@@ -218,6 +223,35 @@ public class Script {
                 sendMessage(msg);
             }
         }
+    }
+
+    /**
+     * Calculate Equilibrium Mid-Market Price with the sample case given a {@code halfLife} parameter of 0.5 hardcoded in {@link Exchange#process(String)}
+     * <p>
+     * This prototype use the {@link MessageType#PRINT} message to trigger the calculations, because it's not part of the communication protocol yet.
+     */
+    private static void testEquilibriumMidMarketPrice() {
+        //Populate OrderBook for a sample test of equilibrium mid-market price
+        createOrderAndSend(OrderSide.BUY, 7, 10000);
+        createOrderAndSend(OrderSide.BUY, 8, 3000);
+        createOrderAndSend(OrderSide.BUY, 9, 4500);
+        createOrderAndSend(OrderSide.SELL, 10, 1000);
+        createOrderAndSend(OrderSide.SELL, 11, 10000);
+        createOrderAndSend(OrderSide.SELL, 12, 2500);
+
+        //EP = ~ $9.671
+        print();
+    }
+
+    private static void createOrderAndSend(OrderSide side, double price, double amount) {
+        Message msg = Message.builder()
+                .messageType(MessageType.ADD)
+                .orderSide(side)
+                .price(price)
+                .amount(amount)
+                .market(Market.BTC_USD)
+                .build();
+        sendMessage(msg);
     }
 
     /**
